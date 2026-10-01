@@ -235,9 +235,122 @@ class ParticleManager {
   }
 
   /**
+   * Explosão de ativação do Jump Orb com shockwave expansiva
+   */
+  emitOrbBurst(x, y, color = '#ffea00') {
+    // 1. Shockwave circular expansiva
+    this.particles.push({
+      x: x,
+      y: y,
+      vx: 0,
+      vy: 0,
+      size: 15,
+      maxSize: 68,
+      alpha: 1,
+      color: color,
+      life: 0.28,
+      maxLife: 0.28,
+      type: 'shockwave'
+    });
+
+    // 2. Anel de partículas radiais luminosas
+    for (let i = 0; i < 22; i++) {
+      const angle = (i / 22) * Math.PI * 2;
+      const speed = Math.random() * 240 + 120;
+      this.particles.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: Math.random() * 5 + 3,
+        alpha: 1,
+        color: Math.random() > 0.3 ? color : '#ffffff',
+        life: 0.38,
+        maxLife: 0.38,
+        type: 'spark'
+      });
+    }
+  }
+
+  /**
+   * Coleta de Moeda Secreta (Chuva de estrelas e brilhos dourados)
+   */
+  emitCoinCollect(x, y) {
+    // Shockwave dourada
+    this.particles.push({
+      x: x,
+      y: y,
+      vx: 0,
+      vy: 0,
+      size: 12,
+      maxSize: 60,
+      alpha: 1,
+      color: '#ffd700',
+      life: 0.32,
+      maxLife: 0.32,
+      type: 'shockwave'
+    });
+
+    // Estrelas e faíscas douradas
+    for (let i = 0; i < 25; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 280 + 80;
+      this.particles.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: Math.random() * 6 + 4,
+        alpha: 1,
+        color: Math.random() > 0.4 ? '#ffd700' : '#ffffff',
+        life: 0.55,
+        maxLife: 0.55,
+        type: 'star'
+      });
+    }
+  }
+
+  /**
+   * Efeito de aceleração do Speed Portal (Linhas de rastro hipersônico)
+   */
+  emitSpeedBoost(x, y) {
+    for (let i = 0; i < 20; i++) {
+      this.particles.push({
+        x: x + (Math.random() - 0.5) * 30,
+        y: y + (Math.random() - 0.5) * 60,
+        vx: Math.random() * 400 + 200,
+        vy: (Math.random() - 0.5) * 80,
+        size: Math.random() * 6 + 2,
+        alpha: 1,
+        color: Math.random() > 0.5 ? '#ff7700' : '#ffea00',
+        life: 0.35,
+        maxLife: 0.35,
+        type: 'spark'
+      });
+    }
+  }
+
+  /**
+   * Adiciona um texto flutuante de feedback no mundo ("★ MOEDA SECRETA! ★")
+   */
+  emitFloatingText(x, y, text, color = '#ffea00') {
+    this.floatingTexts.push({
+      x: x,
+      y: y,
+      text: text,
+      color: color,
+      vy: -55,
+      life: 1.1,
+      maxLife: 1.1,
+      alpha: 1
+    });
+  }
+
+  /**
    * Atualiza a física de todas as partículas e textos flutuantes
    */
   update(dt) {
+
     // 1. Atualizar Partículas
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];

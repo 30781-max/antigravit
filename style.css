@@ -206,6 +206,61 @@ html, body {
   letter-spacing: 1px;
 }
 
+.hud-record {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffaa00;
+  background: rgba(255, 170, 0, 0.15);
+  border: 1px solid rgba(255, 170, 0, 0.4);
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.hud-coins {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(9, 13, 33, 0.7);
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.hud-coin {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.2);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hud-coin.collected {
+  color: #ffd700;
+  text-shadow: 0 0 10px #ffd700, 0 0 20px #ff9900;
+  transform: scale(1.15);
+}
+
+.card-coins-row {
+  display: flex;
+  gap: 6px;
+  margin: 4px 0 6px 0;
+}
+
+.card-coin {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.card-coin.collected {
+  color: #ffd700;
+  text-shadow: 0 0 8px #ffd700;
+}
+
+.highlight-gold {
+  color: #ffd700 !important;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.8) !important;
+}
+
 .attempts-counter {
   font-family: var(--font-display);
   font-size: 1rem;
@@ -213,6 +268,7 @@ html, body {
   color: var(--neon-magenta);
   text-shadow: 0 0 10px rgba(255, 0, 119, 0.6);
 }
+
 
 .hud-controls {
   display: flex;

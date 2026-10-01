@@ -26,11 +26,17 @@
         </div>
       </div>
 
-      <!-- Informações da Fase e Tentativas -->
+      <!-- Informações da Fase, Recorde, Moedas e Tentativas -->
       <div class="hud-top-bar">
         <div class="hud-level-info">
           <span id="hudLevelBadge" class="level-badge">FASE 1</span>
           <span id="hudLevelName" class="level-name">Neon Dawn</span>
+          <span id="hudBestRecord" class="hud-record">REC: 0%</span>
+        </div>
+        <div class="hud-coins" title="3 Moedas Secretas">
+          <span id="hudCoin1" class="hud-coin">★</span>
+          <span id="hudCoin2" class="hud-coin">★</span>
+          <span id="hudCoin3" class="hud-coin">★</span>
         </div>
         <div class="hud-stats">
           <span class="attempts-label">TENTATIVA</span>
@@ -48,6 +54,7 @@
           </button>
         </div>
       </div>
+
 
       <!-- Botão Virtual de Pulo / Toque Mobile (opcional visual) -->
       <div id="mobileTapHint" class="mobile-tap-hint">
@@ -229,10 +236,15 @@
             <span id="completeAttempts" class="stat-value">3</span>
           </div>
           <div class="stat-pill">
+            <span class="stat-label">Moedas Coletadas</span>
+            <span id="completeCoins" class="stat-value highlight-gold">0 / 3</span>
+          </div>
+          <div class="stat-pill">
             <span class="stat-label">Precisão do percurso</span>
             <span class="stat-value highlight-cyan">100%</span>
           </div>
         </div>
+
 
         <div class="menu-buttons">
           <button id="btnNextLevel" class="cyber-btn primary-btn">

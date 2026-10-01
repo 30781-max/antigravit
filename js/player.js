@@ -65,10 +65,15 @@ class Player {
       this.jumpBufferTimer -= dt;
     }
 
-    // Se o jogador clicou para pular um pouco antes de tocar o chão, executa agora
-    if (this.jumpBufferTimer > 0 && this.coyoteTimer > 0) {
-      this.performJump(audioCtrl, particleMgr, activeSkin);
+    // Se o jogador clicou para pular um pouco antes de alcançar um orb ou tocar o chão, executa agora
+    if (this.jumpBufferTimer > 0) {
+      if (level && this.tryActivateOrb(level.jumpOrbs, audioCtrl, particleMgr, activeSkin)) {
+        this.jumpBufferTimer = 0;
+      } else if (this.coyoteTimer > 0) {
+        this.performJump(audioCtrl, particleMgr, activeSkin);
+      }
     }
+
 
     // 3. Aplicação da Aceleração da Gravidade
     const effectiveGravity = CONFIG.GRAVITY * this.gravityDir;
@@ -99,9 +104,60 @@ class Player {
   }
 
   /**
-   * Registra a intenção de pulo no buffer
+   * Tenta ativar um Jump Orb no ar se o jogador estiver dentro do raio de alcance
+   * @param {Array} orbs
+   * @param {AudioController} audioCtrl
+   * @param {ParticleManager} particleMgr
+   * @param {Object} activeSkin
+   * @returns {boolean}
    */
-  queueJump() {
+  tryActivateOrb(orbs, audioCtrl, particleMgr, activeSkin) {
+    if (!orbs || orbs.length === 0) return false;
+
+    const px = this.x + this.w / 2;
+    const py = this.y + this.h / 2;
+    const hitRadius = CONFIG.ORB_HIT_RADIUS || 65;
+    const hitRadiusSq = hitRadius * hitRadius;
+
+    for (const orb of orbs) {
+      if (orb.used) continue;
+      const dx = px - orb.x;
+      const dy = py - orb.y;
+      if (dx * dx + dy * dy <= hitRadiusSq) {
+        // Ativação do Jump Orb com impulso aéreo no sentido oposto à gravidade
+        const force = orb.jumpForce || CONFIG.ORB_JUMP_FORCE || 730;
+        this.vy = -force * this.gravityDir;
+        this.grounded = false;
+        this.coyoteTimer = 0;
+        this.jumpBufferTimer = 0;
+        orb.used = true;
+
+        if (audioCtrl) audioCtrl.playOrb();
+        if (particleMgr) {
+          particleMgr.emitOrbBurst(orb.x, orb.y, orb.color || '#ffea00');
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Registra a intenção de pulo no buffer ou aciona o Jump Orb imediatamente
+   */
+  queueJump(orbs, audioCtrl, particleMgr, activeSkin) {
+    // 1. Tentar primeiro ativar um Jump Orb se estiver no ar próximo a um
+    if (this.tryActivateOrb(orbs, audioCtrl, particleMgr, activeSkin)) {
+      return;
+    }
+
+    // 2. Se estiver no chão, pula imediatamente
+    if (this.grounded || this.coyoteTimer > 0) {
+      this.performJump(audioCtrl, particleMgr, activeSkin);
+      return;
+    }
+
+    // 3. Caso contrário, guarda a intenção no buffer para pular assim que pousar ou alcançar um orb
     this.jumpBufferTimer = CONFIG.JUMP_BUFFER;
   }
 
@@ -138,6 +194,7 @@ class Player {
       this.y = groundY;
     }
   }
+
 
   /**
    * Desenha o cubo do jogador utilizando a Skin selecionada

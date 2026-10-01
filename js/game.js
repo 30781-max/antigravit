@@ -43,6 +43,16 @@ class GameManager {
     this.unlockedLevel = parseInt(localStorage.getItem('cyberpulse_unlocked') || '1', 10);
     this.completedLevels = JSON.parse(localStorage.getItem('cyberpulse_completed') || '[]');
     this.attemptsHistory = JSON.parse(localStorage.getItem('cyberpulse_attempts') || '{}');
+    this.bestPercentages = JSON.parse(localStorage.getItem('cyberpulse_bests') || '{}');
+    this.savedCoins = JSON.parse(localStorage.getItem('cyberpulse_coins') || '{}');
+    this.collectedCoinsThisRun = {};
+    this.speedMultiplier = 1.0;
+    this.beatPulse = 0;
+
+    // Conectar batida rítmica da bateria chiptune com os visuais da cena
+    this.audio.onBeat = (step) => {
+      this.beatPulse = 1.0;
+    };
 
     // Conectar eventos e interface
     this.bindDomElements();
@@ -51,6 +61,7 @@ class GameManager {
     this.renderLevelSelectGrid();
     this.renderSkinsGrid();
     this.updateAudioButtonState();
+
 
     // Iniciar loop principal de animação
     requestAnimationFrame((t) => this.gameLoop(t));
@@ -270,9 +281,11 @@ class GameManager {
   bindInputs() {
     const handleJumpAction = () => {
       if (this.gameState === 'PLAYING') {
-        this.player.queueJump();
+        const activeSkin = this.skinManager.getCurrentSkin();
+        this.player.queueJump(this.level.jumpOrbs, this.audio, this.particles, activeSkin);
       }
     };
+
 
     // Teclado
     window.addEventListener('keydown', (e) => {
@@ -348,20 +361,28 @@ class GameManager {
       const card = document.createElement('div');
       card.className = `level-card ${isCompleted ? 'completed' : ''} ${!isUnlocked ? 'locked' : ''}`;
 
+      const savedCoinsList = this.savedCoins[lvl.id] || [];
+      const coinsHtml = [0, 1, 2].map(cIdx => 
+        `<span class="card-coin ${savedCoinsList.includes(cIdx) ? 'collected' : ''}">★</span>`
+      ).join('');
+      const best = isCompleted ? 100 : (this.bestPercentages[lvl.id] || 0);
+
       card.innerHTML = `
         <div class="card-top">
           <span class="card-badge">FASE ${lvl.id}</span>
           <span class="card-difficulty ${lvl.difficultyClass}">${lvl.difficultyName}</span>
         </div>
         <div class="card-title">${lvl.name}</div>
+        <div class="card-coins-row">${coinsHtml}</div>
         <div class="card-stats">
-          <span>${isCompleted ? '⭐ Concluída' : (isUnlocked ? '🔓 Desbloqueada' : '🔒 Bloqueada')}</span>
+          <span>${isCompleted ? '⭐ Concluída' : (isUnlocked ? `Recorde: ${best}%` : '🔒 Bloqueada')}</span>
           <span>${attemptsCount > 0 ? `#${attemptsCount} tentativas` : ''}</span>
         </div>
         <div class="card-progress-bar">
-          <div class="card-progress-fill" style="width: ${isCompleted ? '100%' : '0%'}"></div>
+          <div class="card-progress-fill" style="width: ${best}%"></div>
         </div>
       `;
+
 
       if (isUnlocked) {
         card.addEventListener('click', () => {
@@ -558,7 +579,34 @@ class GameManager {
     this.cameraX = 0;
     this.particles.clear();
     this.respawnTimer = 0;
+    this.speedMultiplier = 1.0;
+    this.collectedCoinsThisRun = {};
+
+    // Restaurar Jump Orbs
+    if (this.level.jumpOrbs) {
+      for (const orb of this.level.jumpOrbs) {
+        orb.used = false;
+      }
+    }
+
+    // Restaurar moedas na run
+    if (this.level.secretCoins) {
+      for (const coin of this.level.secretCoins) {
+        coin.collected = false;
+      }
+    }
+
+    // Restaurar Speed Portals
+    if (this.level.speedPortals) {
+      for (const portal of this.level.speedPortals) {
+        portal.activated = false;
+      }
+    }
+
+    this.updateCoinsHud();
   }
+
+
 
   pauseGame() {
     if (this.gameState !== 'PLAYING') return;
@@ -618,11 +666,22 @@ class GameManager {
     this.dom.completeLevelTitle.textContent = `Fase ${this.level.id}: ${this.level.name}`;
     this.dom.completeAttempts.textContent = `#${this.attempts}`;
 
+    const savedCoinsCount = (this.savedCoins[this.level.id] || []).length;
+    const coinsEl = document.getElementById('completeCoins');
+    if (coinsEl) {
+      coinsEl.textContent = `${'★'.repeat(savedCoinsCount)}${'☆'.repeat(3 - savedCoinsCount)} (${savedCoinsCount}/3)`;
+    }
+
+    this.bestPercentages[this.level.id] = 100;
+    localStorage.setItem('cyberpulse_bests', JSON.stringify(this.bestPercentages));
+    this.renderLevelSelectGrid();
+
     const isLastLevel = this.currentLevelIndex === LEVELS.length - 1;
     this.dom.btnNextLevel.querySelector('.btn-text').textContent = isLastLevel ? 'VER VITÓRIA TOTAL 👑' : 'PRÓXIMA FASE ➔';
 
     this.dom.levelCompleteModal.classList.add('active');
   }
+
 
   showGrandVictory() {
     this.gameState = 'VICTORY';
@@ -638,10 +697,15 @@ class GameManager {
   }
 
   updateHudInfo() {
-    this.dom.hudLevelBadge.textContent = `FASE ${this.level.id}`;
-    this.dom.hudLevelName.textContent = this.level.name;
-    this.dom.hudAttempts.textContent = `#${this.attempts}`;
+    if (this.dom.hudLevelBadge) this.dom.hudLevelBadge.textContent = `FASE ${this.level.id}`;
+    if (this.dom.hudLevelName) this.dom.hudLevelName.textContent = this.level.name;
+    if (this.dom.hudAttempts) this.dom.hudAttempts.textContent = `#${this.attempts}`;
+    if (this.dom.hudBestRecord) {
+      const best = this.bestPercentages[this.level.id] || 0;
+      this.dom.hudBestRecord.textContent = `REC: ${best}%`;
+    }
   }
+
 
   /**
    * ATUALIZAÇÃO DO MUNDO FÍSICO
@@ -665,17 +729,26 @@ class GameManager {
 
     const activeSkin = this.skinManager.getCurrentSkin();
 
-    // 1. Atualizar Jogador
-    this.player.update(dt, this.level.speed, this.audio, this.particles, this.level, activeSkin);
+    // 1. Atualizar Jogador com velocidade dinâmica (speed portals)
+    const effectiveSpeed = this.level.speed * (this.speedMultiplier || 1.0);
+    this.player.update(dt, effectiveSpeed, this.audio, this.particles, this.level, activeSkin);
 
     // 2. Câmera segue o jogador suavemente
     const targetCamX = this.player.x - 220;
     this.cameraX += (targetCamX - this.cameraX) * 0.15;
 
-    // 3. Atualizar Barra de Progresso
+    // 3. Atualizar Barra de Progresso e Gravar Melhor Recorde (%)
     const progress = Math.min(100, Math.max(0, Math.floor((this.player.x / this.level.finishX) * 100)));
     this.dom.progressBarFill.style.width = `${progress}%`;
     this.dom.progressPercent.textContent = `${progress}%`;
+
+    if (progress > (this.bestPercentages[this.level.id] || 0)) {
+      this.bestPercentages[this.level.id] = progress;
+      localStorage.setItem('cyberpulse_bests', JSON.stringify(this.bestPercentages));
+      if (this.dom.hudBestRecord) {
+        this.dom.hudBestRecord.textContent = `REC: ${progress}%`;
+      }
+    }
 
     // 4. Checar Linha de Chegada
     if (this.player.x >= this.level.finishX) {
@@ -707,6 +780,56 @@ class GameManager {
       }
     }
 
+    // 5.1 Portais de Velocidade (Speed Portals)
+    if (this.level.speedPortals && this.level.speedPortals.length > 0) {
+      for (const portal of this.level.speedPortals) {
+        if (CollisionEngine.checkPlayerSpeedPortal(this.player, portal)) {
+          if (!portal.activated) {
+            portal.activated = true;
+            this.speedMultiplier = portal.speedMultiplier || 1.15;
+            try {
+              if (this.audio && typeof this.audio.playSpeedPortal === 'function') {
+                this.audio.playSpeedPortal();
+              }
+              if (this.particles && typeof this.particles.emitSpeedBoost === 'function') {
+                this.particles.emitSpeedBoost(portal.x, this.player.y + this.player.h / 2);
+              }
+              if (this.audio && typeof this.audio.startMusic === 'function') {
+                this.audio.startMusic((this.level.speed * this.speedMultiplier) / 400);
+              }
+            } catch (err) {
+              console.warn("Speed portal notice:", err);
+            }
+          }
+        }
+      }
+    }
+
+
+    // 5.2 Moedas Secretas Colecionáveis (3 por fase)
+    if (this.level.secretCoins) {
+      for (let i = 0; i < this.level.secretCoins.length; i++) {
+        const coin = this.level.secretCoins[i];
+        if (!coin.collected && CollisionEngine.checkPlayerCoin(this.player, coin)) {
+          coin.collected = true;
+          this.collectedCoinsThisRun[i] = true;
+
+          if (!this.savedCoins[this.level.id]) {
+            this.savedCoins[this.level.id] = [];
+          }
+          if (!this.savedCoins[this.level.id].includes(i)) {
+            this.savedCoins[this.level.id].push(i);
+            localStorage.setItem('cyberpulse_coins', JSON.stringify(this.savedCoins));
+          }
+
+          this.audio.playCoin();
+          this.particles.emitCoinCollect(coin.x, coin.y);
+          this.particles.emitFloatingText(coin.x, coin.y - 24, "★ MOEDA SECRETA! ★", "#ffea00");
+          this.updateCoinsHud();
+        }
+      }
+    }
+
     // 6. Trampolins Neon (Jump Pads)
     if (this.level.jumpPads) {
       for (const pad of this.level.jumpPads) {
@@ -729,10 +852,11 @@ class GameManager {
       }
     }
 
-    // 7. Colisão com Plataformas
+
+    // 7. Colisão com Plataformas (Suporte a Pouso e Condução Estável)
     let isCurrentlyOnPlatform = false;
     for (const plat of this.level.platforms) {
-      if (plat.x + plat.w < this.cameraX || plat.x > this.cameraX + CONFIG.CANVAS_WIDTH) continue;
+      if (plat.x + plat.w < this.cameraX - 40 || plat.x > this.cameraX + CONFIG.CANVAS_WIDTH + 40) continue;
 
       const col = CollisionEngine.handlePlayerPlatform(this.player, plat, dt);
       if (col) {
@@ -742,9 +866,23 @@ class GameManager {
         } else if (col.type === 'land') {
           this.player.land(col.surfaceY, this.audio, this.particles, this.level.colors.primary, activeSkin);
           isCurrentlyOnPlatform = true;
+          break;
+        } else if (col.type === 'riding') {
+          // Mantém o cubo firmemente apoiado no topo da plataforma para correr e pular suavemente
+          if (this.player.gravityDir === 1) {
+            this.player.y = col.surfaceY - this.player.h;
+          } else {
+            this.player.y = col.surfaceY;
+          }
+          this.player.vy = 0;
+          this.player.grounded = true;
+          this.player.coyoteTimer = CONFIG.COYOTE_TIME;
+          isCurrentlyOnPlatform = true;
+          break;
         }
       }
     }
+
 
     // 8. Colisão com o Chão Padrão ou Teto Padrão
     if (!isCurrentlyOnPlatform) {
@@ -844,10 +982,20 @@ class GameManager {
     this.drawFloorAndCeiling(ctx, colors);
 
     // Portais Gravitacionais
+    // Portais Gravitacionais
     this.drawPortals(ctx);
+
+    // Portais de Velocidade (Speed Portals)
+    this.drawSpeedPortals(ctx);
 
     // Trampolins Neon
     this.drawJumpPads(ctx);
+
+    // Jump Orbs (Orbes de Pulo Flutuantes)
+    this.drawJumpOrbs(ctx);
+
+    // 3 Moedas Secretas Colecionáveis
+    this.drawSecretCoins(ctx);
 
     // Espinhos
     this.drawSpikes(ctx, colors);
@@ -873,11 +1021,14 @@ class GameManager {
 
   drawParallaxGrid(ctx, colors) {
     ctx.save();
+    // Brilho pulsante no tempo com a bateria/música
+    const pulseAlpha = 0.08 + (this.beatPulse || 0) * 0.14;
     ctx.strokeStyle = colors.primary;
-    ctx.globalAlpha = 0.08;
-    ctx.lineWidth = 1;
+    ctx.globalAlpha = pulseAlpha;
+    ctx.lineWidth = 1 + (this.beatPulse || 0) * 1.5;
 
     const gridSize = 60;
+
     const offsetX = -(this.cameraX * 0.3) % gridSize;
 
     for (let x = offsetX; x < CONFIG.CANVAS_WIDTH; x += gridSize) {
@@ -1248,6 +1399,244 @@ class GameManager {
     ctx.restore();
   }
 
+  /**
+   * Renderiza os Jump Orbs (Orbes amarelos flutuantes com anéis orbitais)
+   */
+  drawJumpOrbs(ctx) {
+    if (!this.level.jumpOrbs || this.level.jumpOrbs.length === 0) return;
+    const timeSec = performance.now() / 1000;
+    ctx.save();
+
+    for (const orb of this.level.jumpOrbs) {
+      if (orb.x + 50 < this.cameraX || orb.x - 50 > this.cameraX + CONFIG.CANVAS_WIDTH) continue;
+
+      const orbColor = orb.color || '#ffea00';
+      const radius = orb.radius || CONFIG.ORB_RADIUS || 22;
+      const pulse = Math.sin(timeSec * 7 + orb.x) * 3;
+      const r = radius + pulse;
+
+      // Se o orb foi usado nesta fase, fica com transparência reduzida
+      if (orb.used) {
+        ctx.globalAlpha = 0.35;
+      } else {
+        ctx.globalAlpha = 1.0;
+      }
+
+      // Aura de Brilho Radial
+      const auraGrad = ctx.createRadialGradient(orb.x, orb.y, radius * 0.3, orb.x, orb.y, r * 2.2);
+      auraGrad.addColorStop(0, 'rgba(255, 234, 0, 0.45)');
+      auraGrad.addColorStop(0.5, 'rgba(255, 200, 0, 0.15)');
+      auraGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = auraGrad;
+      ctx.beginPath();
+      ctx.arc(orb.x, orb.y, r * 2.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Anel Externo Pulsante
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = orbColor;
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = orbColor;
+      ctx.beginPath();
+      ctx.arc(orb.x, orb.y, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Núcleo Central
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(orb.x, orb.y, radius * 0.45, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Círculo Interno Colorido
+      ctx.fillStyle = orbColor;
+      ctx.beginPath();
+      ctx.arc(orb.x, orb.y, radius * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pontos Orbitais Giratórios
+      const orbitCount = 3;
+      const orbitDist = r + 5;
+      ctx.fillStyle = '#ffffff';
+      for (let i = 0; i < orbitCount; i++) {
+        const ang = timeSec * 4 + (i * (Math.PI * 2 / orbitCount));
+        const ox = orb.x + Math.cos(ang) * orbitDist;
+        const oy = orb.y + Math.sin(ang) * orbitDist;
+        ctx.beginPath();
+        ctx.arc(ox, oy, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+
+  /**
+   * Renderiza as 3 Moedas Secretas Colecionáveis com Rotação 3D Simulada
+   */
+  drawSecretCoins(ctx) {
+    if (!this.level.secretCoins || this.level.secretCoins.length === 0) return;
+    const timeSec = performance.now() / 1000;
+    ctx.save();
+
+    for (let i = 0; i < this.level.secretCoins.length; i++) {
+      const coin = this.level.secretCoins[i];
+      if (coin.collected) continue; // Já coletada na run
+      if (coin.x + 50 < this.cameraX || coin.x - 50 > this.cameraX + CONFIG.CANVAS_WIDTH) continue;
+
+      const size = coin.size || CONFIG.COIN_SIZE || 32;
+      const scaleX = Math.cos(timeSec * 3.5 + i); // Efeito de moeda girando no eixo vertical
+      const floatY = coin.y + Math.sin(timeSec * 4 + i) * 5;
+
+      ctx.save();
+      ctx.translate(coin.x, floatY);
+      ctx.scale(Math.abs(scaleX), 1);
+
+      // Brilho Dourado Intenso
+      ctx.shadowBlur = 22;
+      ctx.shadowColor = '#ffd700';
+
+      // Corpo da Moeda
+      const coinGrad = ctx.createLinearGradient(-size / 2, -size / 2, size / 2, size / 2);
+      coinGrad.addColorStop(0, '#fff480');
+      coinGrad.addColorStop(0.5, '#ffd700');
+      coinGrad.addColorStop(1, '#ff9900');
+      ctx.fillStyle = coinGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Borda Externa
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+
+      // Anel Interno
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.beginPath();
+      ctx.arc(0, 0, size * 0.34, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Estrela Central
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 15px Orbitron, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('★', 0, 1);
+
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  /**
+   * Renderiza os Speed Portals (Portais de Aceleração com chevrons >>)
+   */
+  /**
+   * Renderiza os Speed Portals (Portais de Velocidade Translúcidos Neon estilo Geometry Dash)
+   */
+  drawSpeedPortals(ctx) {
+    if (!this.level.speedPortals || this.level.speedPortals.length === 0) return;
+    const timeSec = performance.now() / 1000;
+    ctx.save();
+
+    for (const portal of this.level.speedPortals) {
+      const pw = portal.w || 52;
+      if (portal.x + pw < this.cameraX - 60 || portal.x > this.cameraX + CONFIG.CANVAS_WIDTH + 60) continue;
+
+      const topY = CONFIG.CEILING_Y;
+      const bottomY = CONFIG.GROUND_Y;
+      const gateH = bottomY - topY;
+      const centerX = portal.x + pw / 2;
+
+      // Aura Holográfica Suave
+      const auraGrad = ctx.createLinearGradient(portal.x - 20, 0, portal.x + pw + 20, 0);
+      auraGrad.addColorStop(0, 'rgba(255, 140, 0, 0)');
+      auraGrad.addColorStop(0.5, 'rgba(255, 170, 0, 0.22)');
+      auraGrad.addColorStop(1, 'rgba(255, 140, 0, 0)');
+      ctx.fillStyle = auraGrad;
+      ctx.fillRect(portal.x - 20, topY, pw + 40, gateH);
+
+      // Coluna Translúcida Interna
+      const beamGrad = ctx.createLinearGradient(portal.x, 0, portal.x + pw, 0);
+      beamGrad.addColorStop(0, 'rgba(255, 170, 0, 0.35)');
+      beamGrad.addColorStop(0.5, 'rgba(255, 230, 100, 0.15)');
+      beamGrad.addColorStop(1, 'rgba(255, 170, 0, 0.35)');
+      ctx.fillStyle = beamGrad;
+      ctx.fillRect(portal.x + 4, topY, pw - 8, gateH);
+
+      // Linhas Laterais de Laser Neon
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#ffaa00';
+      ctx.shadowBlur = 16;
+      ctx.shadowColor = '#ff8800';
+      ctx.beginPath();
+      ctx.moveTo(portal.x + 3, topY);
+      ctx.lineTo(portal.x + 3, bottomY);
+      ctx.moveTo(portal.x + pw - 3, topY);
+      ctx.lineTo(portal.x + pw - 3, bottomY);
+      ctx.stroke();
+
+      // Chevrons Vetoriais Neon (>>) com animação de pulso rítmico
+      const chevronSpacing = 65;
+      const flowOffset = (timeSec * 80) % chevronSpacing;
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#ffffff';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#ffe600';
+
+      for (let cy = topY + 30 + flowOffset; cy <= bottomY - 30; cy += chevronSpacing) {
+        // Primeiro Chevron (>)
+        ctx.beginPath();
+        ctx.moveTo(centerX - 10, cy - 10);
+        ctx.lineTo(centerX - 3, cy);
+        ctx.lineTo(centerX - 10, cy + 10);
+        ctx.stroke();
+
+        // Segundo Chevron (>)
+        ctx.beginPath();
+        ctx.moveTo(centerX + 2, cy - 10);
+        ctx.lineTo(centerX + 9, cy);
+        ctx.lineTo(centerX + 2, cy + 10);
+        ctx.stroke();
+      }
+
+      // Suportes Tecnológicos discretos no chão e teto
+      ctx.fillStyle = '#140c02';
+      ctx.strokeStyle = '#ffaa00';
+      ctx.lineWidth = 2;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#ffaa00';
+      ctx.fillRect(portal.x - 4, topY - 10, pw + 8, 16);
+      ctx.strokeRect(portal.x - 4, topY - 10, pw + 8, 16);
+
+      ctx.fillRect(portal.x - 4, bottomY - 6, pw + 8, 16);
+      ctx.strokeRect(portal.x - 4, bottomY - 6, pw + 8, 16);
+    }
+    ctx.restore();
+  }
+
+
+  /**
+   * Atualiza a exibição das 3 Moedas Secretas no HUD
+   */
+  updateCoinsHud() {
+    for (let i = 0; i < 3; i++) {
+      const coinEl = document.getElementById(`hudCoin${i + 1}`);
+      if (!coinEl) continue;
+
+      const isCollectedRun = !!this.collectedCoinsThisRun[i];
+      const isSaved = this.savedCoins[this.level.id] && this.savedCoins[this.level.id].includes(i);
+
+      if (isCollectedRun || isSaved) {
+        coinEl.classList.add('collected');
+      } else {
+        coinEl.classList.remove('collected');
+      }
+    }
+  }
+
   drawFinishLine(ctx, colors) {
     const fx = this.level.finishX;
     if (fx + 40 < this.cameraX || fx > this.cameraX + CONFIG.CANVAS_WIDTH) return;
@@ -1281,6 +1670,11 @@ class GameManager {
     // Limita delta-time máximo para evitar saltos bruscos se o usuário trocar de aba
     if (dt > 0.05) dt = 0.05;
 
+    // Decaimento do pulso de batida rítmica
+    if (this.beatPulse > 0) {
+      this.beatPulse = Math.max(0, this.beatPulse - dt * 3.5);
+    }
+
     this.update(dt);
     this.draw();
     this.drawSkinPreview(dt);
@@ -1288,3 +1682,4 @@ class GameManager {
     requestAnimationFrame((t) => this.gameLoop(t));
   }
 }
+

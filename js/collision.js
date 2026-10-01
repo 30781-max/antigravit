@@ -68,8 +68,17 @@ class CollisionEngine {
   }
 
   /**
-   * Colisão do jogador com plataformas retangulares suspensas
-   * Retorna 'land' se aterrissou com sucesso no topo/base, ou 'crash' se colidiu frontalmente
+   * Colisão do jogador com plataformas retangulares e blocos sólidos
+   * Trata com precisão:
+   * 1. Condução estável (andar em cima da plataforma sem afundar ou tremer)
+   * 2. Pouso seguro ao cair de cima (land)
+   * 3. Colisão frontal letal contra paredes verticais (crash)
+   * 4. Cabeçada no fundo da plataforma (crash)
+   * 
+   * @param {Player} player
+   * @param {Object} plat { x, y, w, h, isBlock }
+   * @param {number} dt
+   * @returns {Object|null} { type: 'land'|'riding'|'crash', surfaceY: number }
    */
   static handlePlayerPlatform(player, plat, dt) {
     const px = player.x;
@@ -77,30 +86,79 @@ class CollisionEngine {
     const pw = player.w;
     const ph = player.h;
 
-    // Checagem de sobreposição de caixas
-    if (px + pw > plat.x && px < plat.x + plat.w && py + ph > plat.y && py < plat.y + plat.h) {
-      const isNormal = player.gravityDir === 1;
+    const platLeft = plat.x;
+    const platRight = plat.x + plat.w;
+    const platTop = plat.y;
+    const platBottom = plat.y + plat.h;
 
-      if (isNormal) {
-        // Gravidade Normal: Pousando no topo da plataforma
-        const prevY = py - player.vy * dt;
-        if (prevY + ph <= plat.y + 14 && player.vy >= 0) {
-          return { type: 'land', surfaceY: plat.y };
-        }
-      } else {
-        // Gravidade Invertida: Apoiando na face inferior da plataforma
-        const prevY = py - player.vy * dt;
-        if (prevY >= plat.y + plat.h - 14 && player.vy <= 0) {
-          return { type: 'land', surfaceY: plat.y + plat.h };
-        }
+    // Checagem de proximidade ampla para otimização
+    if (px + pw < platLeft - 10 || px > platRight + 10) {
+      return null;
+    }
+
+    const isNormal = player.gravityDir === 1;
+
+    if (isNormal) {
+      // =========================================================================
+      // GRAVIDADE NORMAL (Jogador caindo ou correndo no topo da plataforma)
+      // =========================================================================
+
+      // Tolerância horizontal para apoio no topo
+      const horizontalOverlap = (px + pw > platLeft + 6) && (px < platRight - 4);
+
+      // CASO 1: JOGADOR JÁ ESTÁ APOIADO / ANDANDO NO TOPO DA PLATAFORMA
+      // Se a base do jogador estiver alinhada com o topo (com tolerância de 5px) e horizontalmente sobre ela
+      if (horizontalOverlap && Math.abs((py + ph) - platTop) <= 5 && player.vy >= 0) {
+        return { type: 'riding', surfaceY: platTop };
       }
 
-      // Se atingiu a quina ou a lateral de frente, é impacto fatal
-      return { type: 'crash' };
+      // CASO 2: ATERRISSAGEM DE CIMA PARA BAIXO (LAND)
+      // Posição vertical anterior da base
+      const prevBottom = (py + ph) - player.vy * dt;
+      const currentBottom = py + ph;
+
+      // O jogador estava no nível do topo ou acima (prevBottom <= platTop + 14)
+      // e no frame atual tocou ou cruzou o topo para baixo (currentBottom >= platTop)
+      if (horizontalOverlap && prevBottom <= platTop + 14 && currentBottom >= platTop && player.vy >= 0) {
+        return { type: 'land', surfaceY: platTop };
+      }
+
+      // CASO 3: COLISÃO FRONTAL OU INTERNA COM A PLATAFORMA (CRASH)
+      // Se há sobreposição de caixas (AABB)
+      if (px + pw > platLeft && px < platRight && py + ph > platTop + 8 && py < platBottom) {
+        // Se a base do jogador afundou mais de 8px abaixo do topo, bateu na lateral ou por baixo
+        return { type: 'crash' };
+      }
+
+    } else {
+      // =========================================================================
+      // GRAVIDADE INVERTIDA (Jogador no teto ou correndo na face inferior)
+      // =========================================================================
+
+      const horizontalOverlap = (px + pw > platLeft + 6) && (px < platRight - 4);
+
+      // CASO 1: JOGADOR ANDANDO NA FACE INFERIOR DA PLATAFORMA
+      if (horizontalOverlap && Math.abs(py - platBottom) <= 5 && player.vy <= 0) {
+        return { type: 'riding', surfaceY: platBottom };
+      }
+
+      // CASO 2: ATERRISSAGEM NA FACE INFERIOR
+      const prevTop = py - player.vy * dt;
+      const currentTop = py;
+
+      if (horizontalOverlap && prevTop >= platBottom - 14 && currentTop <= platBottom && player.vy <= 0) {
+        return { type: 'land', surfaceY: platBottom };
+      }
+
+      // CASO 3: COLISÃO FRONTAL NA GRAVIDADE INVERTIDA
+      if (px + pw > platLeft && px < platRight && py < platBottom - 8 && py + ph > platTop) {
+        return { type: 'crash' };
+      }
     }
 
     return null;
   }
+
 
   /**
    * Verifica se o centro do jogador está dentro do raio de ativação do Jump Orb
