@@ -188,7 +188,7 @@ class AudioController {
     } catch (e) {}
   }
 
-  // Som de Inversão de Gravidade / Portal
+  // Som de Inversão de Gravidade / Portal (Warp dimensional profundo com sweep duplo)
   playPortal() {
     if (this.isMuted) return;
     this.init();
@@ -199,19 +199,45 @@ class AudioController {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(280, t);
-      osc.frequency.linearRampToValueAtTime(740, t + 0.1);
-      osc.frequency.exponentialRampToValueAtTime(420, t + 0.22);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(180, t);
+      osc.frequency.exponentialRampToValueAtTime(780, t + 0.12);
+      osc.frequency.exponentialRampToValueAtTime(260, t + 0.28);
 
-      gain.gain.setValueAtTime(0.25, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.24);
+      gain.gain.setValueAtTime(0.32, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
       osc.start(t);
-      osc.stop(t + 0.25);
+      osc.stop(t + 0.32);
+    } catch (e) {}
+  }
+
+  // Som de Trampolim Neon / Jump Pad (Impulso supersônico brilhante)
+  playJumpPad() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(260, t);
+      osc.frequency.exponentialRampToValueAtTime(940, t + 0.14);
+
+      gain.gain.setValueAtTime(0.28, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.2);
     } catch (e) {}
   }
 
@@ -410,6 +436,26 @@ class ParticleManager {
     }
   }
 
+  // Explosão anelar de partículas de energia ao cruzar o portal
+  emitPortalBurst(x, y, color) {
+    for (let i = 0; i < 28; i++) {
+      const angle = (i / 28) * Math.PI * 2 + (Math.random() * 0.2 - 0.1);
+      const speed = Math.random() * 280 + 120;
+      this.particles.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: Math.random() * 5 + 3,
+        alpha: 1,
+        color: color,
+        life: 0.45,
+        maxLife: 0.45,
+        type: 'spark'
+      });
+    }
+  }
+
   // Confetes e faíscas ao concluir a fase
   emitCelebration(cameraX) {
     for (let i = 0; i < 60; i++) {
@@ -477,329 +523,430 @@ class ParticleManager {
 }
 
 /* ==========================================================================
-   4. SISTEMA DE DADOS DAS 10 FASES (Espaçamento Amplo, Ritmo Fluido e Sem Conflitos)
+   4. SISTEMA DE DADOS DAS 10 FASES (Design Diferenciado, Ritmo Intenso e Desafiador)
    ========================================================================== */
 const LEVELS = [
-  // FASE 1 — Tutorial: Baixa velocidade, obstáculos com 800px+ de distância, tempo de sobra para reagir
+  // FASE 1 — Neon Dawn: Tutorial Dinâmico & Primeiros Abismos (Ritmo Ágil)
   {
     id: 1,
     name: "Neon Dawn",
     difficultyName: "Fácil",
     difficultyClass: "diff-facil",
-    speed: 380,
-    finishX: 6000,
+    speed: 430,
+    finishX: 6200,
     colors: {
       primary: '#00f0ff',
-      accent: '#0088ff',
-      bgGrad1: '#070919',
-      bgGrad2: '#0d163a',
+      accent: '#0077ff',
+      bgGrad1: '#050a1a',
+      bgGrad2: '#0c1b3a',
       floorTop: '#00f0ff',
-      floorBody: '#070b1e'
+      floorBody: '#060b20'
     },
     hints: [
-      { x: 500, y: 460, text: "ESPAÇO OU TOQUE PARA PULAR" },
-      { x: 2300, y: 430, text: "SUBA NA PLATAFORMA TRANQUILAMENTE" },
-      { x: 4200, y: 460, text: "ESPINHO DUPLO! SEGURE O PULO!" },
-      { x: 5100, y: 460, text: "RETA FINAL!" }
+      { x: 450, y: 460, text: "ESPAÇO OU TOQUE PARA PULAR" },
+      { x: 1900, y: 460, text: "SALTE O PRIMEIRO ABISMO!" },
+      { x: 3450, y: 460, text: "TRAMPOLIM NEON! DEIXE-SE LANÇAR!" },
+      { x: 4700, y: 460, text: "ESPINHO DUPLO! SEGURE O SALTO!" }
     ],
     spikes: [
-      { x: 1000, w: 36, h: 42 },
-      { x: 1800, w: 36, h: 42 },
-      { x: 3700, w: 36, h: 42 },
-      { x: 4500, w: 36, h: 42 },
-      { x: 4536, w: 36, h: 42 }, // Espinho duplo isolado
-      { x: 5300, w: 36, h: 42 }
+      { x: 800, w: 36, h: 42 },
+      { x: 1350, w: 36, h: 42 },
+      { x: 2650, w: 36, h: 42 },
+      { x: 3880, w: 36, h: 42 },
+      { x: 3916, w: 36, h: 42 },
+      { x: 3952, w: 36, h: 42 }, // Triplo limpo pelo Jump Pad em 3680!
+      { x: 4450, w: 36, h: 42 },
+      { x: 5050, w: 36, h: 42 },
+      { x: 5086, w: 36, h: 42 }, // Duplo
+      { x: 5650, w: 36, h: 42 }
+    ],
+    pits: [
+      { startX: 2000, endX: 2220 }, // Salto de abismo limpo de 220px
+      { startX: 3000, endX: 3450 }  // Abismo com plataforma suspensa
     ],
     platforms: [
-      { x: 2500, y: 505, w: 500, h: 65 }  // Plataforma muito ampla e segura
+      { x: 3080, y: 485, w: 260, h: 25 } // Plataforma sobre o abismo 2
     ],
-    pits: [],
+    jumpPads: [
+      { x: 3680, y: 558, w: 48, h: 12, bounceForce: 950 } // Lança alto sobre o triplo
+    ],
     movingHazards: [],
     gravityPortals: []
   },
 
-  // FASE 2 — Iniciante: Pontes largas sobre os buracos, espinhos bem afastados
+  // FASE 2 — Cyber Chasm: O Desafio dos Abismos e Plataformas Escalonadas
   {
     id: 2,
-    name: "Cyber Flow",
+    name: "Cyber Chasm",
     difficultyName: "Iniciante",
     difficultyClass: "diff-iniciante",
-    speed: 420,
-    finishX: 7500,
+    speed: 480,
+    finishX: 7400,
     colors: {
       primary: '#00ff88',
       accent: '#00b862',
-      bgGrad1: '#041412',
-      bgGrad2: '#082823',
+      bgGrad1: '#04140e',
+      bgGrad2: '#08291c',
       floorTop: '#00ff88',
-      floorBody: '#051814'
+      floorBody: '#051811'
     },
     hints: [
-      { x: 500, y: 460, text: "PONTES SEGURAS SOBRE OS BURACOS!" }
+      { x: 450, y: 460, text: "PARKOUR EM PLATAFORMAS SUSPENSAS!" },
+      { x: 3100, y: 430, text: "SALTE DE DEGRAU EM DEGRAU!" }
     ],
     spikes: [
-      { x: 1100, w: 36, h: 42 },
-      { x: 1950, w: 36, h: 42 },
-      { x: 4100, w: 36, h: 42 },
-      { x: 4136, w: 36, h: 42 }, // Duplo
+      { x: 900, w: 36, h: 42 },
+      { x: 1550, w: 36, h: 42 },
+      { x: 1586, w: 36, h: 42 }, // Duplo
+      { x: 2650, w: 36, h: 42 },
+      { x: 4600, w: 36, h: 42 },
+      { x: 5350, w: 36, h: 42 },
+      { x: 5386, w: 36, h: 42 }, // Duplo
       { x: 6250, w: 36, h: 42 },
-      { x: 7000, w: 36, h: 42 },
-      { x: 7036, w: 36, h: 42 }  // Duplo
+      { x: 6750, w: 36, h: 42 },
+      { x: 6786, w: 36, h: 42 }  // Duplo
     ],
     pits: [
-      { startX: 2700, endX: 3300 },
-      { startX: 4900, endX: 5500 }
+      { startX: 1850, endX: 2080 }, // Salto direto 230px
+      { startX: 3000, endX: 4350 }, // Grande despenhadeiro com plataformas escalonadas
+      { startX: 5650, endX: 5920 }  // Salto 270px
     ],
     platforms: [
-      { x: 2800, y: 505, w: 400, h: 65 },  // Ponte ampla sobre buraco 1
-      { x: 5000, y: 490, w: 400, h: 30 }   // Ponte ampla sobre buraco 2
+      { x: 3100, y: 495, w: 220, h: 25 },
+      { x: 3430, y: 440, w: 200, h: 25 },
+      { x: 3750, y: 395, w: 200, h: 25 },
+      { x: 4060, y: 460, w: 200, h: 25 }
+    ],
+    jumpPads: [
+      { x: 2380, y: 558, w: 48, h: 12, bounceForce: 930 }
     ],
     movingHazards: [],
     gravityPortals: []
   },
 
-  // FASE 3 — Intermediária: Perigos móveis isolados, escadaria sem espinhos colados
+  // FASE 3 — Kinetic Wave: Perigos Móveis e Lâminas Oscilantes
   {
     id: 3,
-    name: "Pulse Hazard",
+    name: "Kinetic Wave",
     difficultyName: "Intermediária",
     difficultyClass: "diff-intermediaria",
-    speed: 460,
-    finishX: 8500,
+    speed: 520,
+    finishX: 8400,
     colors: {
-      primary: '#ffb700',
-      accent: '#ff8800',
-      bgGrad1: '#140c02',
-      bgGrad2: '#281704',
-      floorTop: '#ffb700',
-      floorBody: '#160d03'
+      primary: '#ffaa00',
+      accent: '#ff5500',
+      bgGrad1: '#160a02',
+      bgGrad2: '#2b1404',
+      floorTop: '#ffaa00',
+      floorBody: '#180c03'
     },
     hints: [
-      { x: 500, y: 460, text: "PERIGOS MÓVEIS! OBSERVE O MOVIMENTO!" }
+      { x: 450, y: 460, text: "ATENÇÃO ÀS LÂMINAS EM MOVIMENTO!" },
+      { x: 3700, y: 440, text: "SINCRONIZE SEUS PARDOS COM O RITMO!" }
     ],
     spikes: [
-      { x: 1100, w: 36, h: 42 },
-      { x: 2800, w: 36, h: 42 },
-      { x: 2836, w: 36, h: 42 }, // Duplo
-      { x: 5200, w: 36, h: 42 },
-      { x: 6900, w: 36, h: 42 },
-      { x: 6936, w: 36, h: 42 },
-      { x: 6972, w: 36, h: 42 }, // Triplo bem isolado
-      { x: 7800, w: 36, h: 42 }
+      { x: 950, w: 36, h: 42 },
+      { x: 1700, w: 36, h: 42 },
+      { x: 1736, w: 36, h: 42 }, // Duplo
+      { x: 3150, w: 36, h: 42 },
+      { x: 4950, w: 36, h: 42 },
+      { x: 4986, w: 36, h: 42 },
+      { x: 6400, w: 36, h: 42 },
+      { x: 7150, w: 36, h: 42 },
+      { x: 7186, w: 36, h: 42 },
+      { x: 7750, w: 36, h: 42 }
     ],
-    pits: [],
+    pits: [
+      { startX: 2500, endX: 2780 },
+      { startX: 5700, endX: 6200 }
+    ],
     platforms: [
-      // Escadaria de degraus amplos (200px+ cada)
-      { x: 3600, y: 505, w: 200, h: 25 },
-      { x: 3880, y: 445, w: 200, h: 25 },
-      { x: 4160, y: 385, w: 220, h: 25 }
+      { x: 3850, y: 490, w: 200, h: 25 },
+      { x: 4160, y: 435, w: 200, h: 25 },
+      { x: 4470, y: 380, w: 220, h: 25 },
+      { x: 5820, y: 475, w: 260, h: 25 }
+    ],
+    jumpPads: [
+      { x: 2320, y: 558, w: 48, h: 12, bounceForce: 950 } // Salta sobre o abismo de 2500
     ],
     movingHazards: [
-      { x: 1950, baseY: 490, w: 32, h: 65, amplitude: 55, speed: 2.0, color: '#ff8800' },
-      { x: 6050, baseY: 490, w: 32, h: 65, amplitude: 60, speed: 2.2, color: '#ff8800' }
+      { x: 1300, baseY: 490, w: 34, h: 65, amplitude: 55, speed: 2.2, color: '#ff5500' },
+      { x: 2150, baseY: 480, w: 34, h: 70, amplitude: 60, speed: 2.5, color: '#ffaa00' },
+      { x: 5350, baseY: 480, w: 34, h: 70, amplitude: 65, speed: 2.8, color: '#ff5500' },
+      { x: 6750, baseY: 485, w: 34, h: 65, amplitude: 60, speed: 3.0, color: '#ffaa00' }
     ],
     gravityPortals: []
   },
 
-  // FASE 4 — Intermediária +: Inversão no Teto com pistas limpas e espaçamento de 1000px
+  // FASE 4 — Antigravity Nexus: O Portal Dimensional Inescapável
   {
     id: 4,
-    name: "Gravity Shift",
+    name: "Gravity Nexus",
     difficultyName: "Intermediária",
     difficultyClass: "diff-intermediaria",
-    speed: 500,
-    finishX: 9500,
+    speed: 560,
+    finishX: 9200,
     colors: {
       primary: '#ff0077',
       accent: '#c000bb',
-      bgGrad1: '#160413',
-      bgGrad2: '#2a0725',
+      bgGrad1: '#160317',
+      bgGrad2: '#2a052d',
       floorTop: '#ff0077',
-      floorBody: '#160514'
+      floorBody: '#170419'
     },
     hints: [
-      { x: 500, y: 460, text: "PORTAL DE GRAVIDADE À FRENTE!" },
-      { x: 3200, y: 240, text: "NO TETO! PULE PARA BAIXO!" }
+      { x: 450, y: 460, text: "PORTAL DIMENSIONAL INESCAPÁVEL À FRENTE!" },
+      { x: 3100, y: 230, text: "NO TETO! PULE PARA BAIXO PARA DESVIAR!" },
+      { x: 6500, y: 460, text: "RETORNO AO CHÃO! REAÇÃO IMEDIATA!" }
     ],
     spikes: [
-      // Ato 1: Chão Normal
-      { x: 1100, w: 36, h: 42 },
-      { x: 2000, w: 36, h: 42 },
-      { x: 2036, w: 36, h: 42 }, // Duplo
-      // Ato 2: No Teto (Invertido, espaçamento de 1000px!)
-      { x: 4000, w: 36, h: 42, inverted: true },
-      { x: 5000, w: 36, h: 42, inverted: true },
-      { x: 5036, w: 36, h: 42, inverted: true }, // Duplo teto
-      { x: 5900, w: 36, h: 42, inverted: true }
+      // Chão Inicial
+      { x: 1000, w: 36, h: 42 },
+      { x: 1750, w: 36, h: 42 },
+      { x: 1786, w: 36, h: 42 },
+      // No Teto Invertido
+      { x: 3400, w: 36, h: 42, inverted: true },
+      { x: 4100, w: 36, h: 42, inverted: true },
+      { x: 4136, w: 36, h: 42, inverted: true }, // Duplo no teto
+      { x: 4850, w: 36, h: 42, inverted: true },
+      { x: 5550, w: 36, h: 42, inverted: true },
+      { x: 5586, w: 36, h: 42, inverted: true },
+      // Retorno ao Chão
+      { x: 7200, w: 36, h: 42 },
+      { x: 7850, w: 36, h: 42 },
+      { x: 7886, w: 36, h: 42 },
+      { x: 8500, w: 36, h: 42 },
+      { x: 8536, w: 36, h: 42 }
     ],
     pits: [
-      { startX: 7400, endX: 8000 }
+      { startX: 2200, endX: 2480 },
+      { startX: 6850, endX: 7120 }
     ],
     platforms: [
-      { x: 7500, y: 490, w: 400, h: 30 } // Ponte segura no retorno
+      { x: 2260, y: 490, w: 160, h: 25 },
+      // Plataforma suspensa invertida no teto
+      { x: 4400, y: 230, w: 260, h: 25 }
+    ],
+    jumpPads: [
+      { x: 2600, y: 558, w: 48, h: 12, bounceForce: 920 }
     ],
     movingHazards: [
-      { x: 8650, baseY: 490, w: 32, h: 65, amplitude: 60, speed: 2.5, color: '#ff00aa' }
+      { x: 8150, baseY: 480, w: 34, h: 70, amplitude: 65, speed: 2.6, color: '#ff0077' }
     ],
     gravityPortals: [
-      { x: 3000, y: 300, w: 45, h: 180, targetGravity: -1 }, // Inverte para o teto
-      { x: 6500, y: 240, w: 45, h: 180, targetGravity: 1 }   // Restaura para o chão
+      { x: 2850, targetGravity: -1 }, // Inversão para o teto (unskippable, de teto a chão)
+      { x: 6200, targetGravity: 1 }   // Restauração para o chão
     ]
   },
 
-  // FASE 5 — Difícil: Alta velocidade, mas com 900px+ entre cada obstáculo
+  // FASE 5 — Overclock Sprint: Alta Velocidade e Reflexos Puros
   {
     id: 5,
-    name: "Quantum Surge",
+    name: "Overclock Sprint",
     difficultyName: "Difícil",
     difficultyClass: "diff-dificil",
-    speed: 540,
-    finishX: 10500,
+    speed: 620,
+    finishX: 9800,
     colors: {
-      primary: '#ff3344',
-      accent: '#ff8800',
-      bgGrad1: '#1c0216',
-      bgGrad2: '#2c0422',
-      floorTop: '#ff3344',
-      floorBody: '#160212'
+      primary: '#ff2233',
+      accent: '#ff7700',
+      bgGrad1: '#1a0208',
+      bgGrad2: '#30040e',
+      floorTop: '#ff2233',
+      floorBody: '#160207'
     },
     hints: [
-      { x: 500, y: 460, text: "RITMO VELOZ E ESPAÇADO!" }
+      { x: 450, y: 460, text: "VELOCIDADE MÁXIMA! REFLEXOS RÁPIDOS!" }
     ],
     spikes: [
-      { x: 1200, w: 36, h: 42 },
-      { x: 2150, w: 36, h: 42 },
-      { x: 2186, w: 36, h: 42 }, // Duplo
-      { x: 5400, w: 36, h: 42 },
-      { x: 5436, w: 36, h: 42 },
-      { x: 5472, w: 36, h: 42 }, // Triplo
-      { x: 8650, w: 36, h: 42 },
-      { x: 8686, w: 36, h: 42 }, // Duplo
-      { x: 9600, w: 36, h: 42 },
-      { x: 9636, w: 36, h: 42 },
-      { x: 9672, w: 36, h: 42 }  // Triplo
+      { x: 1050, w: 36, h: 42 },
+      { x: 1650, w: 36, h: 42 },
+      { x: 1686, w: 36, h: 42 },
+      { x: 2600, w: 36, h: 42 },
+      { x: 2636, w: 36, h: 42 },
+      { x: 3800, w: 36, h: 42 },
+      { x: 3836, w: 36, h: 42 },
+      { x: 3872, w: 36, h: 42 }, // Triplo
+      { x: 5100, w: 36, h: 42 },
+      { x: 5136, w: 36, h: 42 },
+      { x: 6450, w: 36, h: 42 },
+      { x: 6486, w: 36, h: 42 },
+      { x: 7700, w: 36, h: 42 },
+      { x: 7736, w: 36, h: 42 },
+      { x: 7772, w: 36, h: 42 }, // Triplo
+      { x: 8900, w: 36, h: 42 },
+      { x: 8936, w: 36, h: 42 },
+      { x: 9350, w: 36, h: 42 }
     ],
     pits: [
-      { startX: 3950, endX: 4600 },
-      { startX: 7200, endX: 7850 }
+      { startX: 3050, endX: 3380 },
+      { startX: 5750, endX: 6120 },
+      { startX: 8150, endX: 8580 }
     ],
     platforms: [
-      { x: 4080, y: 480, w: 400, h: 25 },
-      { x: 7320, y: 480, w: 400, h: 25 }
+      { x: 3120, y: 485, w: 200, h: 25 },
+      { x: 5840, y: 485, w: 220, h: 25 },
+      { x: 8220, y: 485, w: 240, h: 25 }
+    ],
+    jumpPads: [
+      { x: 2100, y: 558, w: 48, h: 12, bounceForce: 960 },
+      { x: 4500, y: 558, w: 48, h: 12, bounceForce: 960 },
+      { x: 7150, y: 558, w: 48, h: 12, bounceForce: 960 }
     ],
     movingHazards: [
-      { x: 3100, baseY: 485, w: 32, h: 65, amplitude: 65, speed: 2.8, color: '#ff3344' },
-      { x: 6350, baseY: 485, w: 32, h: 70, amplitude: 70, speed: 3.0, color: '#ff3344' }
+      { x: 4250, baseY: 480, w: 34, h: 70, amplitude: 65, speed: 3.0, color: '#ff2233' },
+      { x: 6850, baseY: 480, w: 34, h: 70, amplitude: 70, speed: 3.2, color: '#ff7700' }
     ],
     gravityPortals: []
   },
 
-  // FASE 6 — Avançada: Dupla inversão com pistas de teto limpas e folgas de 1100px
+  // FASE 6 — Dual Flux: Inversões Múltiplas Contínuas
   {
     id: 6,
-    name: "Hyper Neon",
+    name: "Dual Flux",
     difficultyName: "Avançada",
     difficultyClass: "diff-avancada",
-    speed: 580,
-    finishX: 11500,
+    speed: 600,
+    finishX: 10800,
     colors: {
       primary: '#ffee00',
       accent: '#00f0ff',
-      bgGrad1: '#0f1202',
-      bgGrad2: '#1e2405',
+      bgGrad1: '#101202',
+      bgGrad2: '#1f2405',
       floorTop: '#ffee00',
-      floorBody: '#101402'
+      floorBody: '#111403'
     },
     hints: [
-      { x: 500, y: 460, text: "FLUXO CONTÍNUO E TRANQUILO!" }
+      { x: 450, y: 460, text: "FLUXO DUPLO: GRAVIDADE ALTERNADA CONTÍNUA!" }
     ],
     spikes: [
-      // Ato 1: Chão Normal
-      { x: 1200, w: 36, h: 42 },
-      { x: 2200, w: 36, h: 42 },
-      { x: 2236, w: 36, h: 42 },
-      // Ato 2: No Teto
-      { x: 4400, w: 36, h: 42, inverted: true },
-      { x: 6500, w: 36, h: 42, inverted: true },
-      { x: 6536, w: 36, h: 42, inverted: true },
-      // Ato 3: Retorno
-      { x: 8500, w: 36, h: 42 },
-      { x: 8536, w: 36, h: 42 },
-      { x: 10750, w: 36, h: 42 },
-      { x: 10786, w: 36, h: 42 },
-      { x: 10822, w: 36, h: 42 }
+      // Chão 1
+      { x: 1050, w: 36, h: 42 },
+      { x: 1650, w: 36, h: 42 },
+      { x: 1686, w: 36, h: 42 },
+      // Teto 1 (2400 a 4500)
+      { x: 2900, w: 36, h: 42, inverted: true },
+      { x: 3600, w: 36, h: 42, inverted: true },
+      { x: 3636, w: 36, h: 42, inverted: true },
+      { x: 4200, w: 36, h: 42, inverted: true },
+      // Chão 2 (4500 a 6800)
+      { x: 5050, w: 36, h: 42 },
+      { x: 5750, w: 36, h: 42 },
+      { x: 5786, w: 36, h: 42 },
+      { x: 6400, w: 36, h: 42 },
+      // Teto 2 (6800 a 9000)
+      { x: 7350, w: 36, h: 42, inverted: true },
+      { x: 8050, w: 36, h: 42, inverted: true },
+      { x: 8086, w: 36, h: 42, inverted: true },
+      { x: 8650, w: 36, h: 42, inverted: true },
+      // Chão Final (9000 a 10800)
+      { x: 9550, w: 36, h: 42 },
+      { x: 10150, w: 36, h: 42 },
+      { x: 10186, w: 36, h: 42 },
+      { x: 10222, w: 36, h: 42 } // Triplo final
     ],
     pits: [
-      { startX: 9400, endX: 10000 }
+      { startX: 2000, endX: 2280 },
+      { startX: 6050, endX: 6350 },
+      { startX: 9800, endX: 10080 }
     ],
     platforms: [
-      { x: 9520, y: 480, w: 380, h: 25 }
+      { x: 2050, y: 485, w: 180, h: 25 },
+      { x: 6110, y: 485, w: 180, h: 25 },
+      { x: 9860, y: 485, w: 160, h: 25 }
+    ],
+    jumpPads: [
+      { x: 1350, y: 558, w: 48, h: 12, bounceForce: 940 },
+      { x: 5350, y: 558, w: 48, h: 12, bounceForce: 940 }
     ],
     movingHazards: [
-      { x: 5450, baseY: 220, w: 32, h: 60, amplitude: 40, speed: 2.8, color: '#ffee00' }
+      { x: 3950, baseY: 220, w: 34, h: 60, amplitude: 45, speed: 2.8, color: '#ffee00' },
+      { x: 8350, baseY: 220, w: 34, h: 60, amplitude: 45, speed: 3.0, color: '#ffee00' }
     ],
     gravityPortals: [
-      { x: 3300, y: 300, w: 45, h: 180, targetGravity: -1 },
-      { x: 7400, y: 240, w: 45, h: 180, targetGravity: 1 }
+      { x: 2350, targetGravity: -1 }, // Teto
+      { x: 4500, targetGravity: 1 },  // Chão
+      { x: 6750, targetGravity: -1 }, // Teto
+      { x: 9000, targetGravity: 1 }   // Chão
     ]
   },
 
-  // FASE 7 — Avançada +: Synth Matrix (Espaçamento de 1000px a 1200px)
+  // FASE 7 — Skyline Corridor: Plataformas Aéreas e Vácuo Abissal
   {
     id: 7,
-    name: "Synth Matrix",
+    name: "Skyline Corridor",
     difficultyName: "Avançada",
     difficultyClass: "diff-avancada",
-    speed: 610,
-    finishX: 12500,
+    speed: 640,
+    finishX: 11500,
     colors: {
-      primary: '#b500ff',
-      accent: '#ff00bb',
-      bgGrad1: '#12021a',
-      bgGrad2: '#240434',
-      floorTop: '#b500ff',
-      floorBody: '#110218'
+      primary: '#9d00ff',
+      accent: '#ff00aa',
+      bgGrad1: '#110319',
+      bgGrad2: '#230632',
+      floorTop: '#9d00ff',
+      floorBody: '#100318'
     },
     hints: [
-      { x: 500, y: 460, text: "SINCRONIZE NO RITMO DA MÚSICA!" }
+      { x: 450, y: 460, text: "ABISMO TOTAL: MANTENHA-SE NAS ILHAS SUSPENSAS!" }
     ],
     spikes: [
-      { x: 1250, w: 36, h: 42 },
-      { x: 3450, w: 36, h: 42 },
-      { x: 3486, w: 36, h: 42 },
-      { x: 6000, w: 36, h: 42 },
-      { x: 6036, w: 36, h: 42 },
-      { x: 6072, w: 36, h: 42 },
-      { x: 9650, w: 36, h: 42 },
-      { x: 9686, w: 36, h: 42 },
-      { x: 11700, w: 36, h: 42 },
-      { x: 11736, w: 36, h: 42 },
-      { x: 11772, w: 36, h: 42 }
+      { x: 1000, w: 36, h: 42 },
+      { x: 1600, w: 36, h: 42 },
+      { x: 1636, w: 36, h: 42 },
+      { x: 4700, w: 36, h: 42 },
+      { x: 4736, w: 36, h: 42 },
+      { x: 7400, w: 36, h: 42 },
+      { x: 7436, w: 36, h: 42 },
+      { x: 7472, w: 36, h: 42 }, // Triplo
+      { x: 10400, w: 36, h: 42 },
+      { x: 10850, w: 36, h: 42 },
+      { x: 10886, w: 36, h: 42 }
     ],
     pits: [
-      { startX: 4400, endX: 5100 },
-      { startX: 8050, endX: 8750 }
+      { startX: 2000, endX: 4300 }, // Grande vácuo 1
+      { startX: 5200, endX: 7100 }, // Grande vácuo 2
+      { startX: 8200, endX: 10100 } // Grande vácuo 3
     ],
     platforms: [
-      { x: 4550, y: 480, w: 400, h: 25 },
-      { x: 8200, y: 480, w: 400, h: 25 }
+      // Vácuo 1
+      { x: 2150, y: 490, w: 220, h: 25 },
+      { x: 2550, y: 435, w: 200, h: 25 },
+      { x: 2950, y: 380, w: 200, h: 25 },
+      { x: 3350, y: 435, w: 200, h: 25 },
+      { x: 3750, y: 490, w: 220, h: 25 },
+      // Vácuo 2
+      { x: 5350, y: 485, w: 220, h: 25 },
+      { x: 5750, y: 430, w: 200, h: 25 },
+      { x: 6150, y: 380, w: 200, h: 25 },
+      { x: 6550, y: 475, w: 240, h: 25 },
+      // Vácuo 3
+      { x: 8350, y: 485, w: 220, h: 25 },
+      { x: 8750, y: 430, w: 200, h: 25 },
+      { x: 9150, y: 380, w: 220, h: 25 },
+      { x: 9550, y: 480, w: 240, h: 25 }
+    ],
+    jumpPads: [
+      { x: 4450, y: 558, w: 48, h: 12, bounceForce: 960 },
+      { x: 7250, y: 558, w: 48, h: 12, bounceForce: 960 },
+      { x: 10250, y: 558, w: 48, h: 12, bounceForce: 960 }
     ],
     movingHazards: [
-      { x: 2350, baseY: 480, w: 32, h: 70, amplitude: 65, speed: 3.0, color: '#ff00bb' },
-      { x: 7100, baseY: 480, w: 32, h: 75, amplitude: 70, speed: 3.2, color: '#ff00bb' },
-      { x: 10700, baseY: 480, w: 32, h: 75, amplitude: 70, speed: 3.4, color: '#ff00bb' }
+      { x: 2750, baseY: 380, w: 34, h: 70, amplitude: 50, speed: 2.8, color: '#ff00aa' },
+      { x: 5950, baseY: 380, w: 34, h: 70, amplitude: 55, speed: 3.2, color: '#9d00ff' },
+      { x: 8950, baseY: 380, w: 34, h: 70, amplitude: 55, speed: 3.4, color: '#ff00aa' }
     ],
     gravityPortals: []
   },
 
-  // FASE 8 — Mestre: Plasma Drift (Inversão ampla com 1100px+ de folga)
+  // FASE 8 — Plasma Gauntlet: Corredores Estreitos e Pressão Simultânea
   {
     id: 8,
-    name: "Plasma Drift",
+    name: "Plasma Gauntlet",
     difficultyName: "Mestre",
     difficultyClass: "diff-mestre",
-    speed: 640,
-    finishX: 13500,
+    speed: 680,
+    finishX: 12400,
     colors: {
       primary: '#00f0ff',
       accent: '#ff0055',
@@ -809,48 +956,68 @@ const LEVELS = [
       floorBody: '#05121c'
     },
     hints: [
-      { x: 500, y: 460, text: "PLASMA ZONE: PRECISÃO E CALMA!" }
+      { x: 450, y: 460, text: "CORREDOR DE PLASMA: ESPINHOS NO CHÃO E NO TETO!" }
     ],
     spikes: [
-      // Chão 1
-      { x: 1300, w: 36, h: 42 },
-      { x: 2450, w: 36, h: 42 },
-      { x: 2486, w: 36, h: 42 },
-      // Teto Invertido
-      { x: 4800, w: 36, h: 42, inverted: true },
-      { x: 7100, w: 36, h: 42, inverted: true },
-      { x: 7136, w: 36, h: 42, inverted: true },
+      { x: 1100, w: 36, h: 42 },
+      { x: 1750, w: 36, h: 42 },
+      { x: 1786, w: 36, h: 42 },
+      // Teto Ativo com espinhos de pressão
+      { x: 2200, w: 36, h: 42, inverted: true },
+      { x: 2600, w: 36, h: 42 },
+      { x: 2950, w: 36, h: 42, inverted: true },
+      // Invertido no Teto
+      { x: 4400, w: 36, h: 42, inverted: true },
+      { x: 5050, w: 36, h: 42, inverted: true },
+      { x: 5086, w: 36, h: 42, inverted: true },
+      { x: 5750, w: 36, h: 42, inverted: true },
+      { x: 6400, w: 36, h: 42, inverted: true },
+      { x: 6436, w: 36, h: 42, inverted: true },
       // Chão Retorno
-      { x: 9400, w: 36, h: 42 },
-      { x: 9436, w: 36, h: 42 },
-      { x: 12850, w: 36, h: 42 },
-      { x: 12886, w: 36, h: 42 },
-      { x: 12922, w: 36, h: 42 }
+      { x: 8050, w: 36, h: 42 },
+      { x: 8700, w: 36, h: 42 },
+      { x: 8736, w: 36, h: 42 },
+      { x: 9950, w: 36, h: 42 },
+      { x: 9986, w: 36, h: 42 },
+      { x: 10022, w: 36, h: 42 }, // Triplo
+      { x: 11400, w: 36, h: 42 },
+      { x: 11850, w: 36, h: 42 },
+      { x: 11886, w: 36, h: 42 }
     ],
     pits: [
-      { startX: 10400, endX: 11100 }
+      { startX: 3300, endX: 3650 },
+      { startX: 9150, endX: 9600 },
+      { startX: 10600, endX: 11100 }
     ],
     platforms: [
-      { x: 10550, y: 480, w: 400, h: 25 }
+      { x: 3380, y: 485, w: 200, h: 25 },
+      { x: 5350, y: 230, w: 240, h: 25 }, // Teto invertido
+      { x: 9260, y: 480, w: 220, h: 25 },
+      { x: 10720, y: 480, w: 220, h: 25 }
+    ],
+    jumpPads: [
+      { x: 2350, y: 558, w: 48, h: 12, bounceForce: 970 },
+      { x: 8400, y: 558, w: 48, h: 12, bounceForce: 970 }
     ],
     movingHazards: [
-      { x: 5950, baseY: 220, w: 32, h: 60, amplitude: 40, speed: 2.8, color: '#00f0ff' },
-      { x: 11950, baseY: 480, w: 32, h: 75, amplitude: 70, speed: 3.5, color: '#ff0055' }
+      { x: 4800, baseY: 220, w: 34, h: 65, amplitude: 50, speed: 3.2, color: '#00f0ff' },
+      { x: 7400, baseY: 480, w: 34, h: 70, amplitude: 70, speed: 3.5, color: '#ff0055' },
+      { x: 10300, baseY: 480, w: 34, h: 75, amplitude: 70, speed: 3.6, color: '#ff0055' }
     ],
     gravityPortals: [
-      { x: 3600, y: 300, w: 45, h: 180, targetGravity: -1 },
-      { x: 8200, y: 240, w: 45, h: 180, targetGravity: 1 }
+      { x: 3800, targetGravity: -1 },
+      { x: 7100, targetGravity: 1 }
     ]
   },
 
-  // FASE 9 — Extrema: Chrono Vortex (Transições amplas e visíveis)
+  // FASE 9 — Chrono Vortex: Ritmo Extremo e Polirritmia
   {
     id: 9,
     name: "Chrono Vortex",
     difficultyName: "Extrema",
     difficultyClass: "diff-extrema",
-    speed: 670,
-    finishX: 14500,
+    speed: 720,
+    finishX: 13500,
     colors: {
       primary: '#ffffff',
       accent: '#9d00ff',
@@ -860,49 +1027,82 @@ const LEVELS = [
       floorBody: '#0e041c'
     },
     hints: [
-      { x: 500, y: 460, text: "VÓRTICE TEMPORAL: FOCO TOTAL!" }
+      { x: 450, y: 460, text: "VÓRTICE TEMPORAL: FOCO TOTAL NO RITMO!" }
     ],
     spikes: [
-      // Ato 1
-      { x: 1350, w: 36, h: 42 },
-      { x: 2550, w: 36, h: 42 },
-      { x: 2586, w: 36, h: 42 },
+      // Ato 1 (Chão)
+      { x: 1100, w: 36, h: 42 },
+      { x: 1650, w: 36, h: 42 },
+      { x: 1686, w: 36, h: 42 },
+      { x: 2400, w: 36, h: 42 },
+      { x: 2436, w: 36, h: 42 },
+      { x: 2472, w: 36, h: 42 }, // Triplo
       // Ato 2 (Teto 1)
-      { x: 4950, w: 36, h: 42, inverted: true },
-      { x: 6150, w: 36, h: 42, inverted: true },
-      { x: 6186, w: 36, h: 42, inverted: true },
-      // Ato 3 (Teto 2)
-      { x: 12250, w: 36, h: 42, inverted: true },
-      // Ato 4 (Sprint)
-      { x: 14000, w: 36, h: 42 },
-      { x: 14036, w: 36, h: 42 },
-      { x: 14072, w: 36, h: 42 }
+      { x: 3800, w: 36, h: 42, inverted: true },
+      { x: 4450, w: 36, h: 42, inverted: true },
+      { x: 4486, w: 36, h: 42, inverted: true },
+      { x: 5200, w: 36, h: 42, inverted: true },
+      { x: 5750, w: 36, h: 42, inverted: true },
+      { x: 5786, w: 36, h: 42, inverted: true },
+      // Ato 3 (Chão Meio)
+      { x: 6900, w: 36, h: 42 },
+      { x: 7550, w: 36, h: 42 },
+      { x: 7586, w: 36, h: 42 },
+      { x: 8300, w: 36, h: 42 },
+      { x: 8336, w: 36, h: 42 },
+      { x: 8372, w: 36, h: 42 }, // Triplo
+      // Ato 4 (Teto 2)
+      { x: 9700, w: 36, h: 42, inverted: true },
+      { x: 10350, w: 36, h: 42, inverted: true },
+      { x: 10386, w: 36, h: 42, inverted: true },
+      { x: 11050, w: 36, h: 42, inverted: true },
+      // Ato 5 (Final Sprint)
+      { x: 12150, w: 36, h: 42 },
+      { x: 12650, w: 36, h: 42 },
+      { x: 12686, w: 36, h: 42 },
+      { x: 13050, w: 36, h: 42 },
+      { x: 13086, w: 36, h: 42 },
+      { x: 13122, w: 36, h: 42 }  // Triplo Final
     ],
     pits: [
-      { startX: 8400, endX: 9100 }
+      { startX: 2800, endX: 3100 },
+      { startX: 6200, endX: 6600 },
+      { startX: 8750, endX: 9150 },
+      { startX: 11500, endX: 11950 }
     ],
     platforms: [
-      { x: 8550, y: 470, w: 400, h: 25 }
+      { x: 2880, y: 485, w: 180, h: 25 },
+      { x: 4800, y: 230, w: 220, h: 25 }, // Teto invertido
+      { x: 6290, y: 480, w: 200, h: 25 },
+      { x: 8840, y: 480, w: 200, h: 25 },
+      { x: 11590, y: 480, w: 220, h: 25 }
+    ],
+    jumpPads: [
+      { x: 2150, y: 558, w: 48, h: 12, bounceForce: 980 },
+      { x: 7250, y: 558, w: 48, h: 12, bounceForce: 980 },
+      { x: 12350, y: 558, w: 48, h: 12, bounceForce: 980 }
     ],
     movingHazards: [
-      { x: 10000, baseY: 480, w: 32, h: 70, amplitude: 70, speed: 3.5, color: '#9d00ff' }
+      { x: 5050, baseY: 220, w: 34, h: 65, amplitude: 45, speed: 3.4, color: '#9d00ff' },
+      { x: 7950, baseY: 480, w: 34, h: 70, amplitude: 70, speed: 3.6, color: '#ffffff' },
+      { x: 10700, baseY: 220, w: 34, h: 65, amplitude: 45, speed: 3.6, color: '#9d00ff' }
     ],
     gravityPortals: [
-      { x: 3700, y: 300, w: 45, h: 180, targetGravity: -1 },
-      { x: 7300, y: 240, w: 45, h: 180, targetGravity: 1 },
-      { x: 11100, y: 300, w: 45, h: 180, targetGravity: -1 },
-      { x: 13150, y: 240, w: 45, h: 180, targetGravity: 1 }
+      { x: 3300, targetGravity: -1 },
+      { x: 6000, targetGravity: 1 },
+      { x: 9350, targetGravity: -1 },
+      { x: 11350, targetGravity: 1 }
     ]
   },
 
-  // FASE 10 — Desafio Supremo Final: Singularity Overdrive (Espaçamentos de 1200px+, fluido e épico)
+  // FASE 10 — Singularity Overdrive: O Pesadelo Neon Supremo
   {
     id: 10,
     name: "Singularity Overdrive",
     difficultyName: "Suprema",
     difficultyClass: "diff-suprema",
-    speed: 700,
-    finishX: 16000,
+    speed: 760,
+    finishX: 15000,
     colors: {
       primary: '#ffcc00',
       accent: '#ff1744',
@@ -912,40 +1112,78 @@ const LEVELS = [
       floorBody: '#1a0307'
     },
     hints: [
-      { x: 500, y: 460, text: "DESAFIO SUPREMO FINAL: DOMINE A SINGULARIDADE!" }
+      { x: 450, y: 460, text: "DESAFIO SUPREMO FINAL: O PESADELO NEON!" }
     ],
     spikes: [
-      // Ato 1 (Chão, 0 a 4800)
-      { x: 1400, w: 36, h: 42 },
-      { x: 3800, w: 36, h: 42 },
-      { x: 3836, w: 36, h: 42 }, // Duplo
-      // Ato 2 (Teto, 4800 a 9400)
-      { x: 6000, w: 36, h: 42, inverted: true },
-      { x: 8400, w: 36, h: 42, inverted: true },
-      { x: 8436, w: 36, h: 42, inverted: true }, // Duplo teto
-      // Ato 3 (Chão, 9400 a 16000)
-      { x: 13200, w: 36, h: 42 },
-      { x: 13236, w: 36, h: 42 }, // Duplo
-      { x: 15350, w: 36, h: 42 },
-      { x: 15386, w: 36, h: 42 },
-      { x: 15422, w: 36, h: 42 }  // Triplo final
+      // Ato 1 (Chão)
+      { x: 1150, w: 36, h: 42 },
+      { x: 1750, w: 36, h: 42 },
+      { x: 1786, w: 36, h: 42 },
+      { x: 2500, w: 36, h: 42 },
+      { x: 2536, w: 36, h: 42 },
+      { x: 2572, w: 36, h: 42 }, // Triplo
+      // Ato 2 (Teto 1)
+      { x: 3900, w: 36, h: 42, inverted: true },
+      { x: 4550, w: 36, h: 42, inverted: true },
+      { x: 4586, w: 36, h: 42, inverted: true },
+      { x: 5350, w: 36, h: 42, inverted: true },
+      { x: 5950, w: 36, h: 42, inverted: true },
+      { x: 5986, w: 36, h: 42, inverted: true },
+      { x: 6022, w: 36, h: 42, inverted: true }, // Triplo Teto
+      // Ato 3 (Chão Meio - Plataformas no Vácuo)
+      { x: 7200, w: 36, h: 42 },
+      { x: 7850, w: 36, h: 42 },
+      { x: 7886, w: 36, h: 42 },
+      { x: 9100, w: 36, h: 42 },
+      { x: 9136, w: 36, h: 42 },
+      { x: 9172, w: 36, h: 42 }, // Triplo
+      // Ato 4 (Teto 2)
+      { x: 10450, w: 36, h: 42, inverted: true },
+      { x: 11100, w: 36, h: 42, inverted: true },
+      { x: 11136, w: 36, h: 42, inverted: true },
+      { x: 11800, w: 36, h: 42, inverted: true },
+      { x: 12450, w: 36, h: 42, inverted: true },
+      { x: 12486, w: 36, h: 42, inverted: true },
+      // Ato 5 (Clímax Final)
+      { x: 13500, w: 36, h: 42 },
+      { x: 14000, w: 36, h: 42 },
+      { x: 14036, w: 36, h: 42 },
+      { x: 14500, w: 36, h: 42 },
+      { x: 14536, w: 36, h: 42 },
+      { x: 14572, w: 36, h: 42 }  // Triplo da Vitória!
     ],
     pits: [
-      { startX: 10500, endX: 11200 },
-      { startX: 14100, endX: 14750 }
+      { startX: 2900, endX: 3250 },
+      { startX: 6400, endX: 6850 },
+      { startX: 8200, endX: 8800 },
+      { startX: 9600, endX: 10050 },
+      { startX: 12900, endX: 13350 }
     ],
     platforms: [
-      { x: 10650, y: 480, w: 400, h: 25 },
-      { x: 14220, y: 480, w: 400, h: 25 }
+      { x: 2980, y: 480, w: 180, h: 25 },
+      { x: 4950, y: 230, w: 220, h: 25 }, // Teto
+      { x: 6490, y: 480, w: 220, h: 25 },
+      { x: 8320, y: 485, w: 200, h: 25 },
+      { x: 8580, y: 435, w: 200, h: 25 },
+      { x: 9690, y: 480, w: 220, h: 25 },
+      { x: 12990, y: 480, w: 220, h: 25 }
+    ],
+    jumpPads: [
+      { x: 2250, y: 558, w: 48, h: 12, bounceForce: 990 },
+      { x: 7550, y: 558, w: 48, h: 12, bounceForce: 990 },
+      { x: 13750, y: 558, w: 48, h: 12, bounceForce: 990 }
     ],
     movingHazards: [
-      { x: 2600, baseY: 480, w: 32, h: 70, amplitude: 70, speed: 3.2, color: '#ff1744' },
-      { x: 7200, baseY: 220, w: 32, h: 60, amplitude: 40, speed: 3.0, color: '#ffcc00' },
-      { x: 12050, baseY: 480, w: 32, h: 70, amplitude: 70, speed: 3.6, color: '#ff1744' }
+      { x: 4250, baseY: 220, w: 34, h: 65, amplitude: 45, speed: 3.4, color: '#ffcc00' },
+      { x: 7450, baseY: 480, w: 34, h: 70, amplitude: 70, speed: 3.8, color: '#ff1744' },
+      { x: 11450, baseY: 220, w: 34, h: 65, amplitude: 45, speed: 3.6, color: '#ffcc00' },
+      { x: 14250, baseY: 480, w: 34, h: 70, amplitude: 70, speed: 4.0, color: '#ff1744' }
     ],
     gravityPortals: [
-      { x: 4800, y: 300, w: 45, h: 180, targetGravity: -1 }, // Portal para o Teto
-      { x: 9400, y: 240, w: 45, h: 180, targetGravity: 1 }   // Retorno ao Chão
+      { x: 3450, targetGravity: -1 },
+      { x: 6250, targetGravity: 1 },
+      { x: 10250, targetGravity: -1 },
+      { x: 12700, targetGravity: 1 }
     ]
   }
 ];
@@ -1118,7 +1356,7 @@ class CollisionEngine {
     const sx = spike.x;
     const sw = spike.w;
     const sh = spike.h;
-    const sy = spike.inverted ? CONFIG.CEILING_Y : CONFIG.GROUND_Y - sh;
+    const sy = spike.y !== undefined ? spike.y : (spike.inverted ? CONFIG.CEILING_Y : CONFIG.GROUND_Y - sh);
 
     // Teste AABB rápido primeiro
     if (px + pw < sx || px > sx + sw || py + ph < sy || py > sy + sh) {
@@ -1701,18 +1939,49 @@ class GameManager {
       return;
     }
 
-    // 5. Portais de Gravidade
-    for (const portal of this.level.gravityPortals) {
-      if (
-        this.player.x + this.player.w > portal.x &&
-        this.player.x < portal.x + portal.w &&
-        this.player.y + this.player.h > portal.y &&
-        this.player.y < portal.y + portal.h
-      ) {
-        if (this.player.gravityDir !== portal.targetGravity) {
-          this.player.setGravity(portal.targetGravity);
-          this.audio.playPortal();
-          this.particles.emitJumpDust(portal.x, portal.y + 60, '#ffffff');
+    // 5. Portais de Gravidade (Corredores Verticais Inescapáveis do Teto ao Chão)
+    if (this.level.gravityPortals) {
+      for (const portal of this.level.gravityPortals) {
+        const pw = portal.w || 52;
+        const py = CONFIG.CEILING_Y;
+        const ph = CONFIG.GROUND_Y - CONFIG.CEILING_Y;
+
+        // O portal abrange 100% da altura jogável entre teto e chão — impossível pular por cima
+        if (
+          this.player.x + this.player.w > portal.x &&
+          this.player.x < portal.x + pw &&
+          this.player.y + this.player.h >= py - 20 &&
+          this.player.y <= py + ph + 20
+        ) {
+          if (this.player.gravityDir !== portal.targetGravity) {
+            this.player.setGravity(portal.targetGravity);
+            this.audio.playPortal();
+            const pColor = portal.targetGravity === -1 ? '#ff0077' : '#00f0ff';
+            this.particles.emitPortalBurst(portal.x + pw / 2, this.player.y + this.player.h / 2, pColor);
+            this.screenShakeTime = 0.15;
+          }
+        }
+      }
+    }
+
+    // 5.1 Trampolins Neon (Jump Pads)
+    if (this.level.jumpPads) {
+      for (const pad of this.level.jumpPads) {
+        const pw = pad.w || 48;
+        const ph = pad.h || 14;
+        if (
+          this.player.x + this.player.w > pad.x &&
+          this.player.x < pad.x + pw &&
+          this.player.y + this.player.h >= pad.y - 6 &&
+          this.player.y <= pad.y + ph + 8
+        ) {
+          const force = pad.bounceForce || 960;
+          this.player.vy = -force * this.player.gravityDir;
+          this.player.grounded = false;
+          this.player.coyoteTimer = 0;
+          this.player.jumpBufferTimer = 0;
+          this.audio.playJumpPad();
+          this.particles.emitJumpDust(pad.x, pad.y, '#ffea00', this.player.gravityDir === -1);
         }
       }
     }
@@ -1828,14 +2097,17 @@ class GameManager {
     // Desenhar Dicas Visuais no Mundo
     this.drawWorldHints(ctx);
 
-    // Desenhar Portais Gravitacionais
-    this.drawPortals(ctx);
-
     // Desenhar Plataformas Sólidas
     this.drawPlatforms(ctx, colors);
 
     // Desenhar Chão e Teto
     this.drawFloorAndCeiling(ctx, colors);
+
+    // Desenhar Portais Gravitacionais (Ancorados do teto ao chão)
+    this.drawPortals(ctx);
+
+    // Desenhar Trampolins Neon
+    this.drawJumpPads(ctx);
 
     // Desenhar Espinhos
     this.drawSpikes(ctx, colors);
@@ -1936,8 +2208,10 @@ class GameManager {
       }
     }
 
-    // 2. Teto para Gravidade Invertida (se a fase tiver portais gravitacionais)
-    if (this.level.gravityPortals.length > 0) {
+    // 2. Teto para Gravidade Invertida e Obstáculos Superiores
+    const hasCeiling = (this.level.gravityPortals && this.level.gravityPortals.length > 0) ||
+                       (this.level.spikes && this.level.spikes.some(s => s.inverted));
+    if (hasCeiling) {
       ctx.fillStyle = colors.floorBody;
       ctx.fillRect(this.cameraX - 50, 0, CONFIG.CANVAS_WIDTH + 100, CONFIG.CEILING_Y);
 
@@ -2009,7 +2283,7 @@ class GameManager {
       const sx = spike.x;
       const sw = spike.w;
       const sh = spike.h;
-      const sy = spike.inverted ? CONFIG.CEILING_Y : CONFIG.GROUND_Y - sh;
+      const sy = spike.y !== undefined ? spike.y : (spike.inverted ? CONFIG.CEILING_Y : CONFIG.GROUND_Y - sh);
 
       ctx.beginPath();
       if (spike.inverted) {
@@ -2072,46 +2346,159 @@ class GameManager {
     ctx.restore();
   }
 
+  // Portais de Gravidade de Altura Total (Inescapáveis — Conectam o Teto ao Chão)
   drawPortals(ctx) {
+    if (!this.level.gravityPortals || this.level.gravityPortals.length === 0) return;
     const timeSec = performance.now() / 1000;
     ctx.save();
 
     for (const portal of this.level.gravityPortals) {
-      if (portal.x + portal.w < this.cameraX || portal.x > this.cameraX + CONFIG.CANVAS_WIDTH) continue;
+      const pw = portal.w || 52;
+      if (portal.x + pw < this.cameraX - 60 || portal.x > this.cameraX + CONFIG.CANVAS_WIDTH + 60) continue;
 
-      const portalColor = portal.targetGravity === -1 ? '#ff0077' : '#00f0ff';
-      const pulse = Math.sin(timeSec * 6) * 4;
+      const isCeilingTarget = portal.targetGravity === -1;
+      const portalColor = isCeilingTarget ? '#ff0077' : '#00f0ff';
+      const glowBase = isCeilingTarget ? '255, 0, 119' : '0, 240, 255';
+      const topY = CONFIG.CEILING_Y;
+      const bottomY = CONFIG.GROUND_Y;
+      const gateH = bottomY - topY;
+      const centerX = portal.x + pw / 2;
 
-      ctx.shadowBlur = 24 + pulse;
-      ctx.shadowColor = portalColor;
-      ctx.fillStyle = portalColor;
-
-      // Elipse / Portal estilizado
-      ctx.beginPath();
-      ctx.ellipse(
-        portal.x + portal.w / 2,
-        portal.y + portal.h / 2,
-        (portal.w / 2) + pulse,
-        portal.h / 2,
-        0, 0, Math.PI * 2
+      // 1. Resplendor / Aura Neon de Fundo que banha o cenário ao redor do portal
+      const auraPulse = Math.sin(timeSec * 5) * 8;
+      const auraGrad = ctx.createRadialGradient(
+        centerX, topY + gateH / 2, 20,
+        centerX, topY + gateH / 2, 160 + auraPulse
       );
-      ctx.fill();
+      auraGrad.addColorStop(0, `rgba(${glowBase}, 0.28)`);
+      auraGrad.addColorStop(0.5, `rgba(${glowBase}, 0.08)`);
+      auraGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = auraGrad;
+      ctx.fillRect(centerX - 160, topY - 20, 320, gateH + 40);
 
-      // Borda brilhante
+      // 2. Coluna Principal do Vórtice Dimensional (Preenche do teto ao chão)
+      const fieldGrad = ctx.createLinearGradient(portal.x, 0, portal.x + pw, 0);
+      fieldGrad.addColorStop(0, `rgba(${glowBase}, 0.35)`);
+      fieldGrad.addColorStop(0.25, `rgba(${glowBase}, 0.8)`);
+      fieldGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.95)');
+      fieldGrad.addColorStop(0.75, `rgba(${glowBase}, 0.8)`);
+      fieldGrad.addColorStop(1, `rgba(${glowBase}, 0.35)`);
+
+      ctx.fillStyle = fieldGrad;
+      ctx.shadowBlur = 24 + Math.sin(timeSec * 8) * 6;
+      ctx.shadowColor = portalColor;
+      ctx.fillRect(portal.x + 4, topY, pw - 8, gateH);
+
+      // 3. Trilhos de Laser de Contenção Laterais (Brancos com brilho neon)
       ctx.lineWidth = 3;
       ctx.strokeStyle = '#ffffff';
+      ctx.beginPath();
+      // Trilho Esquerdo
+      ctx.moveTo(portal.x + 3, topY);
+      ctx.lineTo(portal.x + 3, bottomY);
+      // Trilho Direito
+      ctx.moveTo(portal.x + pw - 3, topY);
+      ctx.lineTo(portal.x + pw - 3, bottomY);
       ctx.stroke();
 
-      // Ícone direcional no centro do portal (seta indicando gravidade)
+      // 4. Feixes Senoidais de Plasma Fluindo Internamente
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#ffffff';
+      ctx.beginPath();
+      const waveFreq = 0.035;
+      const waveSpeed = timeSec * 12;
+      for (let y = topY; y <= bottomY; y += 6) {
+        const offset = Math.sin(y * waveFreq + (isCeilingTarget ? -waveSpeed : waveSpeed)) * 10;
+        if (y === topY) {
+          ctx.moveTo(centerX + offset, y);
+        } else {
+          ctx.lineTo(centerX + offset, y);
+        }
+      }
+      ctx.stroke();
+
+      // 5. Fluxo Vertical de Chevrons Indicadores (▲ para Teto, ▼ para Chão)
+      const chevronCount = 7;
+      const chevronSpacing = gateH / (chevronCount + 1);
+      const flowOffset = (timeSec * 140 * (isCeilingTarget ? -1 : 1)) % chevronSpacing;
+
+      ctx.font = '900 22px Orbitron, sans-serif';
       ctx.fillStyle = '#ffffff';
-      ctx.font = '900 24px Orbitron, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(
-        portal.targetGravity === -1 ? '▲' : '▼',
-        portal.x + portal.w / 2,
-        portal.y + portal.h / 2
-      );
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = '#ffffff';
+
+      const arrowSymbol = isCeilingTarget ? '▲' : '▼';
+      for (let i = 0; i <= chevronCount + 1; i++) {
+        let cy = topY + i * chevronSpacing + flowOffset;
+        if (cy >= topY + 20 && cy <= bottomY - 20) {
+          ctx.fillText(arrowSymbol, centerX, cy);
+        }
+      }
+
+      // 6. Braçadeiras Tecnológicas de Fixação no Teto e Chão (Travam o Portal)
+      // Braçadeira Superior (Presa ao Teto)
+      ctx.fillStyle = '#080c20';
+      ctx.strokeStyle = portalColor;
+      ctx.lineWidth = 2.5;
+      ctx.shadowBlur = 16;
+      ctx.shadowColor = portalColor;
+
+      ctx.fillRect(portal.x - 8, topY - 14, pw + 16, 26);
+      ctx.strokeRect(portal.x - 8, topY - 14, pw + 16, 26);
+
+      // Núcleo luminoso superior
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(centerX - 8, topY - 8, 16, 14);
+
+      // Braçadeira Inferior (Presa ao Chão)
+      ctx.fillStyle = '#080c20';
+      ctx.fillRect(portal.x - 8, bottomY - 12, pw + 16, 26);
+      ctx.strokeRect(portal.x - 8, bottomY - 12, pw + 16, 26);
+
+      // Núcleo luminoso inferior
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(centerX - 8, bottomY - 6, 16, 14);
+    }
+    ctx.restore();
+  }
+
+  // Trampolins Neon (Jump Pads)
+  drawJumpPads(ctx) {
+    if (!this.level.jumpPads || this.level.jumpPads.length === 0) return;
+    const timeSec = performance.now() / 1000;
+    ctx.save();
+
+    for (const pad of this.level.jumpPads) {
+      const pw = pad.w || 48;
+      const ph = pad.h || 14;
+      if (pad.x + pw < this.cameraX || pad.x > this.cameraX + CONFIG.CANVAS_WIDTH) continue;
+
+      const padColor = '#ffea00';
+      const pulse = Math.sin(timeSec * 8) * 3;
+
+      // Base escura do trampolim com chanfro
+      ctx.fillStyle = '#141402';
+      ctx.fillRect(pad.x, pad.y, pw, ph);
+
+      // Moldura neon amarela brilhante
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = padColor;
+      ctx.shadowBlur = 18 + pulse;
+      ctx.shadowColor = padColor;
+      ctx.strokeRect(pad.x, pad.y, pw, ph);
+
+      // Núcleo central pulsante
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(pad.x + 6, pad.y + 3, pw - 12, ph - 6);
+
+      // Chevrons de propulsão para cima
+      ctx.fillStyle = '#ffea00';
+      ctx.font = '900 12px Orbitron, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('▲', pad.x + pw / 2, pad.y - 7 + Math.sin(timeSec * 12) * 2.5);
     }
     ctx.restore();
   }
