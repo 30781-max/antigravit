@@ -103,6 +103,60 @@ class CollisionEngine {
   }
 
   /**
+   * Verifica se o centro do jogador está dentro do raio de ativação do Jump Orb
+   * @param {Player} player
+   * @param {Object} orb { x, y, radius }
+   * @returns {boolean}
+   */
+  static checkPlayerOrb(player, orb) {
+    const px = player.x + player.w / 2;
+    const py = player.y + player.h / 2;
+    const ox = orb.x;
+    const oy = orb.y;
+    const dx = px - ox;
+    const dy = py - oy;
+    const distSq = dx * dx + dy * dy;
+    const hitRadius = CONFIG.ORB_HIT_RADIUS || 65;
+    return distSq <= hitRadius * hitRadius;
+  }
+
+  /**
+   * Checagem de coleta de Moeda Secreta (AABB)
+   * @param {Player} player
+   * @param {Object} coin { x, y, size }
+   * @returns {boolean}
+   */
+  static checkPlayerCoin(player, coin) {
+    const size = coin.size || CONFIG.COIN_SIZE || 32;
+    const cx = coin.x - size / 2;
+    const cy = coin.y - size / 2;
+    return (
+      player.x + player.w > cx &&
+      player.x < cx + size &&
+      player.y + player.h > cy &&
+      player.y < cy + size
+    );
+  }
+
+  /**
+   * Checagem de colisão com Speed Portal (Portal de Velocidade)
+   * @param {Player} player
+   * @param {Object} portal { x, w, speedMultiplier }
+   * @returns {boolean}
+   */
+  static checkPlayerSpeedPortal(player, portal) {
+    const pw = portal.w || 52;
+    const py = CONFIG.CEILING_Y;
+    const ph = CONFIG.GROUND_Y - CONFIG.CEILING_Y;
+    return (
+      player.x + player.w > portal.x &&
+      player.x < portal.x + pw &&
+      player.y + player.h >= py - 20 &&
+      player.y <= py + ph + 20
+    );
+  }
+
+  /**
    * Verifica se o centro do jogador está sobre um abismo (buraco no chão)
    */
   static isPlayerInPit(player, pits) {
@@ -116,3 +170,4 @@ class CollisionEngine {
     return false;
   }
 }
+

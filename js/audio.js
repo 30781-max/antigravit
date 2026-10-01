@@ -15,6 +15,7 @@ class AudioController {
     this.isMuted = false;
     this.musicInterval = null;
     this.currentStep = 0;
+    this.onBeat = null; // Callback para sincronia de pulso visual do cenário
 
     // Carrega a preferência de mudo salva pelo usuário no navegador
     const savedMute = localStorage.getItem('cyberpulse_muted');
@@ -76,6 +77,93 @@ class AudioController {
 
       osc.start(t);
       osc.stop(t + 0.15);
+    } catch (e) {}
+  }
+
+  /**
+   * Som ao Acertar um Jump Orb no ar (Efeito cristalino e enérgico)
+   */
+  playOrb() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(520, t);
+      osc.frequency.exponentialRampToValueAtTime(1080, t + 0.13);
+
+      gain.gain.setValueAtTime(0.28, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.16);
+    } catch (e) {}
+  }
+
+  /**
+   * Som de Coleta de Moeda Secreta (Arpeggio brilhante de sino clássico)
+   */
+  playCoin() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const t = this.ctx.currentTime;
+      const notes = [987.77, 1318.51, 1975.53]; // Si5, Mi6, Si6
+      notes.forEach((freq, idx) => {
+        const st = t + idx * 0.07;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, st);
+
+        gain.gain.setValueAtTime(0.22, st);
+        gain.gain.exponentialRampToValueAtTime(0.001, st + 0.2);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(st);
+        osc.stop(st + 0.22);
+      });
+    } catch (e) {}
+  }
+
+  /**
+   * Som de Portal de Velocidade
+   */
+  playSpeedPortal() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(320, t);
+      osc.frequency.exponentialRampToValueAtTime(850, t + 0.18);
+
+      gain.gain.setValueAtTime(0.18, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.21);
     } catch (e) {}
   }
 
@@ -279,7 +367,7 @@ class AudioController {
   }
 
   /**
-   * Trilha Sonora Neon em Tempo Real (Música Sintetizada Procedural)
+   * Trilha Sonora Neon em Tempo Real (Música Sintetizada Procedural com Sincronia de Ritmo)
    */
   startMusic(speedFactor = 1.0) {
     if (this.isMuted) return;
@@ -300,6 +388,13 @@ class AudioController {
       try {
         const t = this.ctx.currentTime;
         const step = this.currentStep % bassline.length;
+
+        // Dispara o callback de pulso rítmico do cenário nos tempos fortes (0 e 4)
+        if (step === 0 || step === 4) {
+          if (typeof this.onBeat === 'function') {
+            this.onBeat(step);
+          }
+        }
 
         // 1. Linha de Baixo Sintetizada
         const bassOsc = this.ctx.createOscillator();

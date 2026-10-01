@@ -1,10 +1,10 @@
 /**
  * ==============================================================================
  * CYBER PULSE — js/particles.js
- * Sistema de Partículas Neon (Rastros, Poeira de Pulo, Explosões e Celebração)
+ * Sistema de Partículas Neon e Efeitos Visuais (Geometry Dash Style)
  * ==============================================================================
- * Gerencia todas as partículas visuais do jogo. Cada skin pode emitir cores
- * e formatos exclusivos de rastro pelo cubo.
+ * Gerencia shockwaves de orbes, faíscas de moedas, rastros do cubo,
+ * textos flutuantes de feedback e explosões.
  */
 
 'use strict';
@@ -12,6 +12,7 @@
 class ParticleManager {
   constructor() {
     this.particles = [];
+    this.floatingTexts = [];
   }
 
   /**
@@ -85,12 +86,92 @@ class ParticleManager {
   }
 
   /**
+   * Anel de Choque Expansivo (Shockwave) ao ativar um Jump Orb
+   */
+  emitOrbBurst(x, y, color = '#ffe600') {
+    // 1. Shockwave circular em expansão
+    this.particles.push({
+      x: x,
+      y: y,
+      vx: 0,
+      vy: 0,
+      size: CONFIG.ORB_RADIUS,
+      maxSize: CONFIG.ORB_RADIUS * 3.5,
+      alpha: 1,
+      color: color,
+      life: 0.25,
+      maxLife: 0.25,
+      type: 'shockwave'
+    });
+
+    // 2. Faíscas radiais
+    for (let i = 0; i < 16; i++) {
+      const angle = (i / 16) * Math.PI * 2;
+      const speed = Math.random() * 180 + 100;
+      this.particles.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: Math.random() * 4 + 2,
+        alpha: 1,
+        color: color,
+        life: 0.32,
+        maxLife: 0.32,
+        type: 'spark'
+      });
+    }
+  }
+
+  /**
+   * Explosão cintilante ao coletar uma Moeda Secreta (Secret Coin)
+   */
+  emitCoinCollect(x, y) {
+    // Estrelas e faíscas douradas
+    for (let i = 0; i < 28; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 240 + 80;
+      this.particles.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: Math.random() * 6 + 3,
+        alpha: 1,
+        color: Math.random() > 0.3 ? '#ffd700' : '#ffffff',
+        life: 0.55,
+        maxLife: 0.55,
+        type: 'star'
+      });
+    }
+
+    // Texto flutuante de conquista
+    this.emitFloatingText(x, y - 15, '★ MOEDA SECRETA! ★', '#ffd700');
+  }
+
+  /**
+   * Adiciona um texto flutuante estilizado neon que sobe e desaparece
+   */
+  emitFloatingText(x, y, text, color = '#00f0ff') {
+    this.floatingTexts.push({
+      x: x,
+      y: y,
+      text: text,
+      color: color,
+      vy: -60,
+      alpha: 1,
+      life: 0.85,
+      maxLife: 0.85
+    });
+  }
+
+  /**
    * Explosão estilhaçada dramática ao bater em um obstáculo
    */
   emitDeathExplosion(x, y, color1, color2) {
-    for (let i = 0; i < 42; i++) {
+    for (let i = 0; i < 44; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 420 + 90;
+      const speed = Math.random() * 450 + 90;
       this.particles.push({
         x: x + CONFIG.PLAYER_SIZE / 2,
         y: y + CONFIG.PLAYER_SIZE / 2,
@@ -135,7 +216,7 @@ class ParticleManager {
    */
   emitCelebration(cameraX) {
     const colors = ['#00f0ff', '#00ff88', '#ff0077', '#ffb700', '#9d00ff', '#ffffff'];
-    for (let i = 0; i < 70; i++) {
+    for (let i = 0; i < 75; i++) {
       this.particles.push({
         x: cameraX + Math.random() * CONFIG.CANVAS_WIDTH,
         y: Math.random() * 320,
@@ -154,9 +235,10 @@ class ParticleManager {
   }
 
   /**
-   * Atualiza a posição, vida e transparência de cada partícula
+   * Atualiza a física de todas as partículas e textos flutuantes
    */
   update(dt) {
+    // 1. Atualizar Partículas
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
       p.life -= dt;
@@ -170,36 +252,77 @@ class ParticleManager {
       p.y += p.vy * dt;
       p.alpha = Math.max(0, p.life / p.maxLife);
 
+      if (p.type === 'shockwave') {
+        const progress = 1 - (p.life / p.maxLife);
+        p.currentRadius = p.size + (p.maxSize - p.size) * progress;
+      }
+
       if (p.rotation !== undefined && p.vRot) {
         p.rotation += p.vRot * dt;
       }
     }
+
+    // 2. Atualizar Textos Flutuantes
+    for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+      const t = this.floatingTexts[i];
+      t.life -= dt;
+      if (t.life <= 0) {
+        this.floatingTexts.splice(i, 1);
+        continue;
+      }
+      t.y += t.vy * dt;
+      t.alpha = Math.max(0, t.life / t.maxLife);
+    }
   }
 
   /**
-   * Desenha todas as partículas na tela com brilho neon
+   * Renderiza todas as partículas na tela com brilho neon
    */
   draw(ctx) {
     for (const p of this.particles) {
       ctx.save();
       ctx.globalAlpha = p.alpha;
-      ctx.fillStyle = p.color;
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = p.color;
 
-      if (p.type === 'fragment' || p.type === 'confetti') {
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rotation || 0);
-        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-      } else if (p.type === 'star') {
-        ctx.translate(p.x, p.y);
+      if (p.type === 'shockwave') {
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = 3;
+        ctx.shadowBlur = 14;
+        ctx.shadowColor = p.color;
         ctx.beginPath();
-        ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.arc(p.x, p.y, p.currentRadius || p.size, 0, Math.PI * 2);
+        ctx.stroke();
       } else {
-        ctx.fillRect(p.x, p.y, p.size, p.size);
+        ctx.fillStyle = p.color;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = p.color;
+
+        if (p.type === 'fragment' || p.type === 'confetti') {
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation || 0);
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        } else if (p.type === 'star') {
+          ctx.translate(p.x, p.y);
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+        }
       }
 
+      ctx.restore();
+    }
+
+    // Desenhar Textos Flutuantes
+    for (const t of this.floatingTexts) {
+      ctx.save();
+      ctx.globalAlpha = t.alpha;
+      ctx.font = '900 16px Orbitron, sans-serif';
+      ctx.fillStyle = t.color;
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = t.color;
+      ctx.textAlign = 'center';
+      ctx.fillText(t.text, t.x, t.y);
       ctx.restore();
     }
   }
@@ -209,5 +332,6 @@ class ParticleManager {
    */
   clear() {
     this.particles = [];
+    this.floatingTexts = [];
   }
 }

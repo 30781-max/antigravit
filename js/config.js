@@ -1,10 +1,8 @@
 /**
  * ==============================================================================
  * CYBER PULSE — js/config.js
- * Configurações Gerais e Constantes Físicas do Jogo
+ * Configurações Gerais e Constantes Físicas do Jogo (Inspirado em Geometry Dash)
  * ==============================================================================
- * Aqui ficam todos os parâmetros que controlam a física e o tamanho do jogo.
- * Você pode alterar a gravidade, a força do pulo ou a velocidade de rotação aqui!
  */
 
 'use strict';
@@ -51,5 +49,14 @@ const CONFIG = {
   JUMP_BUFFER: 0.12,      // Salva o clique de pulo 0.12s antes de tocar o chão para pular na hora
 
   // Animação do Cubo
-  ROTATION_SPEED: 460     // Velocidade de giro no ar em graus por segundo
+  ROTATION_SPEED: 460,    // Velocidade de giro no ar em graus por segundo
+
+  // Mecânicas de Geometry Dash (Jump Orbs, Moedas e Portais)
+  ORB_RADIUS: 20,         // Raio visual do orbe
+  ORB_HIT_RADIUS: 65,     // Distância máxima do cubo para conseguir tocar e ativar o orbe
+  ORB_JUMP_FORCE: 730,    // Impulso vertical concedido pelo Jump Orb amarelo
+  COIN_SIZE: 32,          // Tamanho das moedas secretas colecionáveis
+  
+  // Efeitos de Sincronia e Batida da Música
+  BEAT_PULSE_DURATION: 0.16
 };
