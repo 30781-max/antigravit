@@ -72,6 +72,9 @@
           <button id="btnLevelSelect" class="cyber-btn secondary-btn">
             <span class="btn-text">☰ SELECIONAR FASES</span>
           </button>
+          <button id="btnSkins" class="cyber-btn secondary-btn">
+            <span class="btn-text">🎨 SKINS DO CUBO</span>
+          </button>
           <button id="btnHowToPlay" class="cyber-btn text-btn">
             <span class="btn-text">❓ COMO JOGAR</span>
           </button>
@@ -98,6 +101,47 @@
 
         <div class="menu-footer">
           <button id="btnBackToMain" class="cyber-btn secondary-btn">
+            <span class="btn-text">VOLTAR AO MENU</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Seleção de Skins -->
+    <div id="skinsModal" class="overlay-screen">
+      <div class="menu-box large-box skins-modal-box">
+        <div class="menu-header">
+          <h2 class="section-title">SKINS DO CUBO NEON</h2>
+          <button id="btnBackFromSkins" class="close-btn" aria-label="Voltar">✕</button>
+        </div>
+
+        <div class="skins-content-layout">
+          <!-- Painel de Prévia da Skin Ativa -->
+          <div class="skin-preview-card">
+            <div class="preview-canvas-wrapper">
+              <canvas id="skinPreviewCanvas" width="220" height="220"></canvas>
+            </div>
+            <div class="skin-selected-info">
+              <h3 id="skinPreviewName" class="skin-info-name">CYBER NEON</h3>
+              <p id="skinPreviewDesc" class="skin-info-desc">O cubo clássico pulsando energia cibernética.</p>
+              <div id="skinPreviewBadge" class="skin-info-badge badge-equipped">EQUIPADA</div>
+            </div>
+            <button id="btnEquipSkin" class="cyber-btn primary-btn full-width">
+              <span class="btn-text">✓ EQUIPADA</span>
+            </button>
+          </div>
+
+          <!-- Grade de Seleção de Skins -->
+          <div class="skins-grid-container">
+            <h4 class="skins-grid-title">ESCOLHA UMA SKIN:</h4>
+            <div id="skinsGrid" class="skins-grid">
+              <!-- Renderizado dinamicamente pelo js/skins.js -->
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-footer">
+          <button id="btnBackToMainFromSkins" class="cyber-btn secondary-btn">
             <span class="btn-text">VOLTAR AO MENU</span>
           </button>
         </div>
@@ -246,6 +290,15 @@
     <div id="deathFlash" class="death-flash"></div>
   </div>
 
-  <script src="script.js"></script>
+  <!-- Módulos Organizados do Jogo (Pasta js/) -->
+  <script src="js/config.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/skins.js"></script>
+  <script src="js/collision.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

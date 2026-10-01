@@ -804,4 +804,243 @@ html, body {
   .total-stats-grid {
     grid-template-columns: 1fr;
   }
+
+  .skins-content-layout {
+    grid-template-columns: 1fr;
+    max-height: 60vh;
+  }
+
+  .skin-preview-card {
+    padding: 16px;
+  }
+
+  #skinPreviewCanvas {
+    width: 160px;
+    height: 160px;
+  }
+
+  .skins-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
 }
+
+/* ==========================================================================
+   MODAL DE SELEÇÃO DE SKINS (Visual Cyberpunk Neon)
+   ========================================================================== */
+.skins-modal-box {
+  max-width: 920px;
+  width: 95%;
+  max-height: 88vh;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+.skins-content-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  margin: 12px 0;
+  max-height: 56vh;
+  overflow: hidden;
+}
+
+/* Painel Esquerdo: Prévia da Skin */
+.skin-preview-card {
+  background: rgba(8, 12, 30, 0.7);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.08), 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.preview-canvas-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, rgba(2, 4, 12, 0.8) 70%);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.2);
+}
+
+#skinPreviewCanvas {
+  display: block;
+  border-radius: 8px;
+}
+
+.skin-selected-info {
+  text-align: center;
+  margin: 12px 0;
+  width: 100%;
+}
+
+.skin-info-name {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  text-shadow: 0 0 12px var(--neon-cyan);
+  margin-bottom: 4px;
+}
+
+.skin-info-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+  min-height: 34px;
+}
+
+.skin-info-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 12px;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 20px;
+}
+
+.badge-equipped {
+  background: rgba(0, 255, 136, 0.18);
+  border: 1px solid #00ff88;
+  color: #00ff88;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+.badge-idle {
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: var(--neon-cyan);
+}
+
+/* Painel Direito: Grade de Cards */
+.skins-grid-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.skins-grid-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--neon-cyan);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.skins-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 6px;
+  max-height: 100%;
+}
+
+.skins-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.skins-grid::-webkit-scrollbar-track {
+  background: rgba(10, 14, 30, 0.6);
+  border-radius: 4px;
+}
+
+.skins-grid::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.35);
+  border-radius: 4px;
+}
+
+.skins-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-cyan);
+}
+
+/* Card Individual de Skin */
+.skin-card {
+  position: relative;
+  background: rgba(12, 16, 38, 0.75);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 10px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.skin-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--neon-cyan);
+  background: rgba(16, 24, 55, 0.9);
+  box-shadow: 0 4px 16px rgba(0, 240, 255, 0.25);
+}
+
+.skin-card.selected {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.12);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.4), inset 0 0 10px rgba(0, 240, 255, 0.15);
+}
+
+.skin-card.equipped {
+  border-color: #00ff88;
+}
+
+.skin-card.selected.equipped {
+  border-color: #00ff88;
+  box-shadow: 0 0 16px rgba(0, 255, 136, 0.4), inset 0 0 10px rgba(0, 255, 136, 0.15);
+}
+
+.skin-card-icon {
+  font-size: 2rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.skin-card:hover .skin-card-icon {
+  transform: scale(1.15);
+}
+
+.skin-card-name {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  color: #ffffff;
+}
+
+.skin-card-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.skin-card-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  background: #00ff88;
+  color: #050a14;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
