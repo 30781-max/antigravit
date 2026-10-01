@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>CYBER PULSE — Mini Jogo 2D Neon</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="gameContainer">
+    <!-- Canvas Principal do Jogo -->
+    <canvas id="gameCanvas" width="1280" height="720"></canvas>
+
+    <!-- HUD Durante o Jogo -->
+    <div id="gameHud" class="overlay-screen hud-hidden">
+      <!-- Barra de Progresso Superior -->
+      <div class="progress-bar-container">
+        <div class="progress-bar-track">
+          <div id="progressBarFill" class="progress-bar-fill"></div>
+        </div>
+        <div class="progress-text-wrapper">
+          <span id="progressPercent">0%</span>
+        </div>
+      </div>
+
+      <!-- Informações da Fase e Tentativas -->
+      <div class="hud-top-bar">
+        <div class="hud-level-info">
+          <span id="hudLevelBadge" class="level-badge">FASE 1</span>
+          <span id="hudLevelName" class="level-name">Neon Dawn</span>
+        </div>
+        <div class="hud-stats">
+          <span class="attempts-label">TENTATIVA</span>
+          <span id="hudAttempts" class="attempts-counter">#1</span>
+        </div>
+        <div class="hud-controls">
+          <button id="btnSoundToggle" class="hud-btn" title="Alternar Som" aria-label="Som">
+            <span id="soundIcon">🔊</span>
+          </button>
+          <button id="btnQuickRestart" class="hud-btn" title="Reiniciar Fase (R)" aria-label="Reiniciar">
+            <span>↺</span>
+          </button>
+          <button id="btnPause" class="hud-btn" title="Pausar (ESC ou P)" aria-label="Pausar">
+            <span>⏸</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Botão Virtual de Pulo / Toque Mobile (opcional visual) -->
+      <div id="mobileTapHint" class="mobile-tap-hint">
+        <span>TOQUE NA TELA PARA PULAR</span>
+      </div>
+    </div>
+
+    <!-- Tela Inicial (Menu Principal) -->
+    <div id="mainMenu" class="overlay-screen active">
+      <div class="menu-box">
+        <div class="logo-wrapper">
+          <div class="neon-cube-icon"></div>
+          <h1 class="game-title">CYBER<span>PULSE</span></h1>
+          <p class="game-subtitle">DESAFIO GEOMÉTRICO NEON 2D</p>
+        </div>
+
+        <div class="menu-buttons">
+          <button id="btnPlay" class="cyber-btn primary-btn">
+            <span class="btn-glow"></span>
+            <span class="btn-text">▶ JOGAR</span>
+          </button>
+          <button id="btnLevelSelect" class="cyber-btn secondary-btn">
+            <span class="btn-text">☰ SELECIONAR FASES</span>
+          </button>
+          <button id="btnHowToPlay" class="cyber-btn text-btn">
+            <span class="btn-text">❓ COMO JOGAR</span>
+          </button>
+        </div>
+
+        <div class="menu-footer">
+          <p class="controls-hint">PC: [ESPAÇO] ou [CLIQUE] para Pular | [R] Reiniciar | [ESC] Pausar</p>
+          <p class="controls-hint-mobile">Mobile: Toque na tela para pular</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tela de Seleção de Fases -->
+    <div id="levelSelectMenu" class="overlay-screen">
+      <div class="menu-box large-box">
+        <div class="menu-header">
+          <h2 class="section-title">SELEÇÃO DE FASES</h2>
+          <button id="btnBackFromLevels" class="close-btn" aria-label="Voltar">✕</button>
+        </div>
+
+        <div id="levelsGrid" class="levels-grid">
+          <!-- As 10 fases serão renderizadas dinamicamente aqui -->
+        </div>
+
+        <div class="menu-footer">
+          <button id="btnBackToMain" class="cyber-btn secondary-btn">
+            <span class="btn-text">VOLTAR AO MENU</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Como Jogar / Controles -->
+    <div id="howToPlayModal" class="overlay-screen">
+      <div class="menu-box">
+        <div class="menu-header">
+          <h2 class="section-title">COMO JOGAR</h2>
+          <button id="btnCloseHowToPlay" class="close-btn" aria-label="Fechar">✕</button>
+        </div>
+
+        <div class="instructions-content">
+          <div class="instruction-item">
+            <div class="inst-icon">🚀</div>
+            <div class="inst-desc">
+              <strong>Corrida Automática</strong>
+              <p>Seu cubo se move sozinho para a direita. Tenha foco e reflexos ágeis!</p>
+            </div>
+          </div>
+          <div class="instruction-item">
+            <div class="inst-icon">⌨️</div>
+            <div class="inst-desc">
+              <strong>Controles no PC</strong>
+              <p>Pressione <b>Espaço</b>, <b>Seta Cima</b> ou <b>Clique com o mouse</b> para pular. Use <b>R</b> para reiniciar.</p>
+            </div>
+          </div>
+          <div class="instruction-item">
+            <div class="inst-icon">📱</div>
+            <div class="inst-desc">
+              <strong>Controles no Celular</strong>
+              <p><b>Toque em qualquer lugar</b> da tela para pular. Botão circular no topo reinicia rápido.</p>
+            </div>
+          </div>
+          <div class="instruction-item">
+            <div class="inst-icon">⚠️</div>
+            <div class="inst-desc">
+              <strong>Perigos & Portais</strong>
+              <p>Evite espinhos e buracos. Passe pelos portais gravitacionais para inverter a gravidade!</p>
+            </div>
+          </div>
+        </div>
+
+        <button id="btnStartFromHelp" class="cyber-btn primary-btn full-width">
+          <span class="btn-text">ENTENDI, VAMOS JOGAR!</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal de Pausa -->
+    <div id="pauseModal" class="overlay-screen">
+      <div class="menu-box small-box">
+        <h2 class="section-title">JOGO PAUSADO</h2>
+        <div class="menu-buttons">
+          <button id="btnResume" class="cyber-btn primary-btn">
+            <span class="btn-text">CONTINUAR</span>
+          </button>
+          <button id="btnRestartFromPause" class="cyber-btn secondary-btn">
+            <span class="btn-text">REINICIAR FASE</span>
+          </button>
+          <button id="btnLevelsFromPause" class="cyber-btn secondary-btn">
+            <span class="btn-text">SELECIONAR FASE</span>
+          </button>
+          <button id="btnMenuFromPause" class="cyber-btn text-btn">
+            <span class="btn-text">MENU PRINCIPAL</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tela de Fase Concluída -->
+    <div id="levelCompleteModal" class="overlay-screen">
+      <div class="menu-box">
+        <div class="victory-header">
+          <div class="trophy-pulse">🏆</div>
+          <h2 class="section-title success-glow">FASE CONCLUÍDA!</h2>
+          <p id="completeLevelTitle" class="complete-subtitle">Fase 1: Neon Dawn</p>
+        </div>
+
+        <div class="level-stats-card">
+          <div class="stat-pill">
+            <span class="stat-label">Tentativas nesta fase</span>
+            <span id="completeAttempts" class="stat-value">3</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Precisão do percurso</span>
+            <span class="stat-value highlight-cyan">100%</span>
+          </div>
+        </div>
+
+        <div class="menu-buttons">
+          <button id="btnNextLevel" class="cyber-btn primary-btn">
+            <span class="btn-text">PRÓXIMA FASE ➔</span>
+          </button>
+          <button id="btnReplayLevel" class="cyber-btn secondary-btn">
+            <span class="btn-text">JOGAR NOVAMENTE</span>
+          </button>
+          <button id="btnLevelsFromWin" class="cyber-btn text-btn">
+            <span class="btn-text">SELEÇÃO DE FASES</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tela de Vitória Total (Completou as 10 Fases) -->
+    <div id="gameVictoryModal" class="overlay-screen">
+      <div class="menu-box large-box victory-box">
+        <div class="victory-header">
+          <div class="crown-icon">👑</div>
+          <h1 class="game-title victory-title">VITÓRIA TOTAL!</h1>
+          <p class="game-subtitle">VOCÊ DOMINOU TODAS AS 10 FASES DO CYBER PULSE</p>
+        </div>
+
+        <div class="victory-summary">
+          <p class="victory-msg">Seus reflexos, timing e ritmo superaram todos os obstáculos, portais de gravidade e desafios extremos das 10 fases!</p>
+          <div class="total-stats-grid">
+            <div class="stat-box">
+              <span class="stat-number">10 / 10</span>
+              <span class="stat-name">Fases Vencidas</span>
+            </div>
+            <div class="stat-box">
+              <span id="totalAttemptsValue" class="stat-number">0</span>
+              <span class="stat-name">Total de Tentativas</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-number">100%</span>
+              <span class="stat-name">Mestre do Ritmo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-buttons">
+          <button id="btnPlayAgainAll" class="cyber-btn primary-btn">
+            <span class="btn-text">JOGAR NOVAMENTE</span>
+          </button>
+          <button id="btnLevelsFromAllWin" class="cyber-btn secondary-btn">
+            <span class="btn-text">ESCOLHER FASE</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flash Overlay de Morte / Impacto -->
+    <div id="deathFlash" class="death-flash"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
