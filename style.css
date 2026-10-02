@@ -597,14 +597,19 @@ html, body {
   letter-spacing: 0.5px;
 }
 
-.diff-facil { color: var(--neon-green); }
-.diff-iniciante { color: #62d8ff; }
-.diff-intermediaria { color: var(--neon-yellow); }
-.diff-dificil { color: #ff8800; }
-.diff-avancada { color: var(--neon-magenta); }
-.diff-mestre { color: #c000ff; }
-.diff-extrema { color: #ff2255; }
-.diff-suprema { color: #ffcc00; text-shadow: 0 0 8px #ffcc00; }
+.diff-facil { color: var(--neon-green); text-shadow: 0 0 8px rgba(0, 255, 136, 0.6); }
+.diff-iniciante { color: #00f0ff; text-shadow: 0 0 8px rgba(0, 240, 255, 0.6); }
+.diff-intermediaria { color: var(--neon-yellow); text-shadow: 0 0 8px rgba(255, 183, 0, 0.6); }
+.diff-dificil { color: #ff8800; text-shadow: 0 0 10px rgba(255, 136, 0, 0.7); }
+.diff-avancada { color: var(--neon-magenta); text-shadow: 0 0 10px rgba(255, 0, 119, 0.7); }
+.diff-mestre { color: #c000ff; text-shadow: 0 0 12px rgba(192, 0, 255, 0.8); }
+.diff-extrema { color: #ff2255; text-shadow: 0 0 12px rgba(255, 34, 85, 0.85); font-weight: 900; }
+.diff-suprema { color: #ffcc00; text-shadow: 0 0 14px #ffcc00, 0 0 24px rgba(255, 23, 68, 0.8); font-weight: 900; animation: supremePulse 1.5s infinite alternate; }
+
+@keyframes supremePulse {
+  from { filter: drop-shadow(0 0 2px #ffcc00); }
+  to { filter: drop-shadow(0 0 8px #ff1744); }
+}
 
 .card-title {
   font-family: var(--font-display);

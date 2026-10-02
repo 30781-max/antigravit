@@ -14,8 +14,8 @@ class CollisionEngine {
    * Checagem de colisão do jogador contra espinho triangular (chão ou teto)
    */
   static checkPlayerSpike(player, spike) {
-    // Margem interna de segurança (5px) para não punir o jogador injustamente
-    const margin = 5;
+    // Margem interna de hitbox rigorosa (2.5px) para alta dificuldade e precisão milimétrica
+    const margin = 2.5;
     const px = player.x + margin;
     const py = player.y + margin;
     const pw = player.w - margin * 2;

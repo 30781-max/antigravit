@@ -44,17 +44,17 @@ const CONFIG = {
   JUMP_FORCE: 690,        // Impulso inicial ao pular (pixels por segundo para cima)
   MAX_FALL_SPEED: 1100,   // Velocidade terminal máxima de queda (evita atravessar chão)
   
-  // Janelas de tolerância para jogabilidade justa e sem frustração
-  COYOTE_TIME: 0.09,      // Permite pular 0.09s após sair de uma beirada/plataforma
-  JUMP_BUFFER: 0.12,      // Salva o clique de pulo 0.12s antes de tocar o chão para pular na hora
+  // Janelas de tolerância calibradas para alta dificuldade e precisão milimétrica
+  COYOTE_TIME: 0.06,      // Tolerância de beirada reduzida para 0.06s (exige precisão)
+  JUMP_BUFFER: 0.08,      // Buffer de pulo reduzido para 0.08s (recompensa timing correto)
 
   // Animação do Cubo
-  ROTATION_SPEED: 460,    // Velocidade de giro no ar em graus por segundo
+  ROTATION_SPEED: 480,    // Velocidade de giro dinâmico no ar em graus por segundo
 
   // Mecânicas de Geometry Dash (Jump Orbs, Moedas e Portais)
   ORB_RADIUS: 20,         // Raio visual do orbe
-  ORB_HIT_RADIUS: 65,     // Distância máxima do cubo para conseguir tocar e ativar o orbe
-  ORB_JUMP_FORCE: 730,    // Impulso vertical concedido pelo Jump Orb amarelo
+  ORB_HIT_RADIUS: 58,     // Distância máxima precisa para tocar e ativar o orbe (exige timing)
+  ORB_JUMP_FORCE: 740,    // Impulso vertical concedido pelo Jump Orb amarelo
   COIN_SIZE: 32,          // Tamanho das moedas secretas colecionáveis
   
   // Efeitos de Sincronia e Batida da Música
