@@ -18,7 +18,7 @@ if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D
     this.arcTo(x + w, y, x + w, y + h, r);
     this.arcTo(x + w, y + h, x, y + h, r);
     this.arcTo(x, y + h, x, y, r);
-    this.arcTo(x, y + x + w, y, r);
+    this.arcTo(x, y, x + w, y, r);
     this.closePath();
     return this;
   };
@@ -39,23 +39,59 @@ const CONFIG = {
   // Propriedades do Jogador (Cubo Neon)
   PLAYER_SIZE: 38,        // Largura e altura do cubo (em pixels)
 
+  // ============================================================================
+  // VELOCIDADE FIXA E CONTROLADA DO PERSONAGEM (Variável Central do Sistema)
+  // ============================================================================
+  // Velocidade padrão consistente para todo o jogo (pode ser ajustada aqui para calibrar tudo)
+  PLAYER_SPEED: 450,
+
+  // Escala controlada e intencional de velocidade por fase (progressão suave e previsível)
+  LEVEL_SPEED_TABLE: {
+    1: 420,  // Fase 1: Neon Dawn (Fácil / Introdução ao ritmo)
+    2: 435,  // Fase 2: Cyber Chasm (Iniciante)
+    3: 450,  // Fase 3: Kinetic Wave (Normal - Velocidade padrão)
+    4: 470,  // Fase 4: Gravity Nexus (Avançado)
+    5: 490,  // Fase 5: Overclock Sprint (Desafiador)
+    6: 510,  // Fase 6: Dual Flux (Difícil)
+    7: 530,  // Fase 7: Skyline Corridor (Muito Difícil)
+    8: 550,  // Fase 8: Plasma Gauntlet (Insano)
+    9: 570,  // Fase 9: Chrono Vortex (Demon)
+    10: 590  // Fase 10: Singularity Overdrive (Extremo)
+  },
+
+  /**
+   * Obtém a velocidade exata, fixa e previsível para uma fase.
+   * Não varia durante a execução da fase.
+   * @param {number} levelId
+   * @returns {number}
+   */
+  getLevelSpeed(levelId) {
+    if (this.LEVEL_SPEED_TABLE && this.LEVEL_SPEED_TABLE[levelId]) {
+      const ratio = this.PLAYER_SPEED / 450;
+      return Math.round(this.LEVEL_SPEED_TABLE[levelId] * ratio);
+    }
+    return this.PLAYER_SPEED;
+  },
+
   // Física do Movimento
   GRAVITY: 2150,          // Aceleração da gravidade (pixels por segundo ao quadrado)
   JUMP_FORCE: 690,        // Impulso inicial ao pular (pixels por segundo para cima)
   MAX_FALL_SPEED: 1100,   // Velocidade terminal máxima de queda (evita atravessar chão)
   
-  // Janelas de tolerância calibradas para alta dificuldade e precisão milimétrica
-  COYOTE_TIME: 0.06,      // Tolerância de beirada reduzida para 0.06s (exige precisão)
-  JUMP_BUFFER: 0.08,      // Buffer de pulo reduzido para 0.08s (recompensa timing correto)
+  // Janelas de tolerância calibradas para controle extremamente responsivo e justo
+  COYOTE_TIME: 0.10,      // Tolerância de beirada de 0.10s (permite saltos na borda de plataformas)
+  JUMP_BUFFER: 0.14,      // Buffer de pulo de 0.14s (evita pulos ignorados antes de pousar)
 
   // Animação do Cubo
   ROTATION_SPEED: 480,    // Velocidade de giro dinâmico no ar em graus por segundo
 
-  // Mecânicas de Geometry Dash (Jump Orbs, Moedas e Portais)
-  ORB_RADIUS: 20,         // Raio visual do orbe
-  ORB_HIT_RADIUS: 58,     // Distância máxima precisa para tocar e ativar o orbe (exige timing)
-  ORB_JUMP_FORCE: 740,    // Impulso vertical concedido pelo Jump Orb amarelo
-  COIN_SIZE: 32,          // Tamanho das moedas secretas colecionáveis
+  // Mecânicas de Geometry Dash (Jump Orbs e Portais de Gravidade)
+  ORB_RADIUS: 22,         // Raio visual do orbe
+  ORB_HIT_RADIUS: 68,     // Distância precisa e justa para tocar e ativar o orbe
+  ORB_JUMP_FORCE: 750,    // Impulso vertical concedido pelo Jump Orb amarelo
+  
+  // Novos tipos de obstáculos (Serras Giratórias Neon)
+  SAW_HIT_RATIO: 0.82,    // Margem justa da caixa de colisão da serra circular
   
   // Efeitos de Sincronia e Batida da Música
   BEAT_PULSE_DURATION: 0.16

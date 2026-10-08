@@ -1,10 +1,13 @@
 /**
  * ==============================================================================
  * CYBER PULSE — js/collision.js
- * Motor de Detecção e Resolução de Colisões
+ * Motor de Detecção e Resolução de Colisões (Preciso, Justo e Sem Falsas Mortes)
  * ==============================================================================
- * Garante física precisa e justa, com caixas delimitadoras (hitboxes) ligeiramente
- * tolerantes para evitar mortes frustrantes em pixels soltos.
+ * Garante física justa inspirada em Geometry Dash:
+ * - Hitboxes de espinhos calibradas geometricamente (sem falsos positivos).
+ * - Pouso suave e estável em plataformas sem atravessamento ou morte na borda.
+ * - Detecção frontal precisa para evitar atravessar paredes sólidas.
+ * - Suporte a novo obstáculo: Serras Giratórias Neon (Sawblades).
  */
 
 'use strict';
@@ -12,10 +15,11 @@
 class CollisionEngine {
   /**
    * Checagem de colisão do jogador contra espinho triangular (chão ou teto)
+   * Usa geometria real do triângulo com margem justa de tolerância (fair hitbox).
    */
   static checkPlayerSpike(player, spike) {
-    // Margem interna de hitbox rigorosa (2.5px) para alta dificuldade e precisão milimétrica
-    const margin = 2.5;
+    // Margem interna justa de 3.5px para evitar mortes frustrantes em pixels vazios
+    const margin = 3.5;
     const px = player.x + margin;
     const py = player.y + margin;
     const pw = player.w - margin * 2;
@@ -31,48 +35,78 @@ class CollisionEngine {
       return false;
     }
 
-    // 2. Teste Preciso da Geometria Triangular
+    // 2. Geometria do Triângulo
     const apexX = sx + sw / 2;
     const apexY = spike.inverted ? sy + sh : sy;
     const baseY = spike.inverted ? sy : sy + sh;
 
-    const corners = [
-      { x: px, y: py },
-      { x: px + pw, y: py },
-      { x: px, y: py + ph },
-      { x: px + pw, y: py + ph },
-      { x: px + pw / 2, y: py + (spike.inverted ? 0 : ph) }
+    // Teste A: O ápice do espinho está dentro do jogador?
+    if (apexX >= px && apexX <= px + pw && apexY >= py && apexY <= py + ph) {
+      return true;
+    }
+
+    // Teste B: Pontos chave da base/corpo do jogador dentro do triângulo do espinho
+    const testPoints = spike.inverted ? [
+      { x: px + 2, y: py },
+      { x: px + pw - 2, y: py },
+      { x: px + pw / 2, y: py },
+      { x: px + pw / 2, y: py + ph * 0.4 }
+    ] : [
+      { x: px + 2, y: py + ph },
+      { x: px + pw - 2, y: py + ph },
+      { x: px + pw / 2, y: py + ph },
+      { x: px + pw / 2, y: py + ph * 0.6 }
     ];
 
-    for (const c of corners) {
+    for (const pt of testPoints) {
       if (spike.inverted) {
         // Espinho para baixo no teto
-        if (c.y >= baseY && c.y <= apexY) {
-          const halfWidthAtY = (sw / 2) * (1 - (c.y - baseY) / sh);
-          if (c.x >= apexX - halfWidthAtY && c.x <= apexX + halfWidthAtY) {
+        if (pt.y >= baseY && pt.y <= apexY) {
+          const halfWidthAtY = (sw / 2) * (1 - (pt.y - baseY) / sh);
+          if (pt.x >= apexX - halfWidthAtY && pt.x <= apexX + halfWidthAtY) {
             return true;
           }
         }
       } else {
         // Espinho para cima no chão
-        if (c.y >= apexY && c.y <= baseY) {
-          const halfWidthAtY = (sw / 2) * ((c.y - apexY) / sh);
-          if (c.x >= apexX - halfWidthAtY && c.x <= apexX + halfWidthAtY) {
+        if (pt.y >= apexY && pt.y <= baseY) {
+          const halfWidthAtY = (sw / 2) * ((pt.y - apexY) / sh);
+          if (pt.x >= apexX - halfWidthAtY && pt.x <= apexX + halfWidthAtY) {
             return true;
           }
         }
       }
     }
 
-    return true;
+    // Teste C: Interseção de segmento de borda da base com as diagonais do espinho
+    // Se o espinho é no chão, verificar se o segmento inferior do player [py+ph] cruza os lados
+    const playerBottom = py + ph;
+    if (!spike.inverted && playerBottom >= apexY && playerBottom <= baseY) {
+      const halfWidth = (sw / 2) * ((playerBottom - apexY) / sh);
+      const minTriX = apexX - halfWidth;
+      const maxTriX = apexX + halfWidth;
+      if (px + pw >= minTriX && px <= maxTriX) {
+        return true;
+      }
+    } else if (spike.inverted && py >= baseY && py <= apexY) {
+      const halfWidth = (sw / 2) * (1 - (py - baseY) / sh);
+      const minTriX = apexX - halfWidth;
+      const maxTriX = apexX + halfWidth;
+      if (px + pw >= minTriX && px <= maxTriX) {
+        return true;
+      }
+    }
+
+    // Se nenhum ponto ou borda colidiu, NÃO há colisão!
+    return false;
   }
 
   /**
-   * Colisão do jogador com plataformas retangulares e blocos sólidos
-   * Trata com precisão:
-   * 1. Condução estável (andar em cima da plataforma sem afundar ou tremer)
-   * 2. Pouso seguro ao cair de cima (land)
-   * 3. Colisão frontal letal contra paredes verticais (crash)
+   * Colisão do jogador com plataformas retangulares e blocos sólidos.
+   * Trata:
+   * 1. Pouso seguro ao cair de cima (land)
+   * 2. Condução estável sobre a plataforma sem afundar ou tremer (riding)
+   * 3. Colisão frontal letal contra a parede esquerda (crash)
    * 4. Cabeçada no fundo da plataforma (crash)
    * 
    * @param {Player} player
@@ -91,74 +125,122 @@ class CollisionEngine {
     const platTop = plat.y;
     const platBottom = plat.y + plat.h;
 
-    // Checagem de proximidade ampla para otimização
+    // Checagem de proximidade horizontal rápida
     if (px + pw < platLeft - 10 || px > platRight + 10) {
       return null;
     }
 
     const isNormal = player.gravityDir === 1;
 
+    // Sobreposição horizontal com margem justa de borda
+    const horizontalOverlap = (px + pw > platLeft + 3) && (px < platRight - 3);
+
     if (isNormal) {
       // =========================================================================
-      // GRAVIDADE NORMAL (Jogador caindo ou correndo no topo da plataforma)
+      // GRAVIDADE NORMAL
       // =========================================================================
+      const currentBottom = py + ph;
+      const prevBottom = (player.prevY !== undefined ? player.prevY : (py - player.vy * dt)) + ph;
 
-      // Tolerância horizontal para apoio no topo
-      const horizontalOverlap = (px + pw > platLeft + 6) && (px < platRight - 4);
-
-      // CASO 1: JOGADOR JÁ ESTÁ APOIADO / ANDANDO NO TOPO DA PLATAFORMA
-      // Se a base do jogador estiver alinhada com o topo (com tolerância de 5px) e horizontalmente sobre ela
-      if (horizontalOverlap && Math.abs((py + ph) - platTop) <= 5 && player.vy >= 0) {
+      // 1. CASO CONDUÇÃO / CORRIDA ESTÁVEL NO TOPO (RIDING)
+      // Se o jogador já estava apoiado sobre a plataforma
+      if (horizontalOverlap && Math.abs(currentBottom - platTop) <= 6 && Math.abs(prevBottom - platTop) <= 6 && player.vy >= 0) {
         return { type: 'riding', surfaceY: platTop };
       }
 
-      // CASO 2: ATERRISSAGEM DE CIMA PARA BAIXO (LAND)
-      // Posição vertical anterior da base
-      const prevBottom = (py + ph) - player.vy * dt;
-      const currentBottom = py + ph;
+      // 2. CASO ATERRISSAGEM (LAND) DE CIMA PARA BAIXO
+      // O jogador veio do ar e tocou a superfície superior
+      const wasAboveTop = prevBottom <= platTop + 8;
+      const isTouchingTop = currentBottom >= platTop - 2 && py < platBottom - 4;
 
-      // O jogador estava no nível do topo ou acima (prevBottom <= platTop + 14)
-      // e no frame atual tocou ou cruzou o topo para baixo (currentBottom >= platTop)
-      if (horizontalOverlap && prevBottom <= platTop + 14 && currentBottom >= platTop && player.vy >= 0) {
+      if (horizontalOverlap && wasAboveTop && isTouchingTop && player.vy >= 0) {
         return { type: 'land', surfaceY: platTop };
       }
 
-      // CASO 3: COLISÃO FRONTAL OU INTERNA COM A PLATAFORMA (CRASH)
-      // Se há sobreposição de caixas (AABB)
-      if (px + pw > platLeft && px < platRight && py + ph > platTop + 8 && py < platBottom) {
-        // Se a base do jogador afundou mais de 8px abaixo do topo, bateu na lateral ou por baixo
-        return { type: 'crash' };
+      // 3. CASO CABEÇADA NO FUNDO DA PLATAFORMA (PULO SUBINDO)
+      if (horizontalOverlap && player.vy < 0) {
+        const prevTop = (player.prevY !== undefined ? player.prevY : py);
+        if (py <= platBottom + 2 && prevTop >= platBottom - 8) {
+          return { type: 'crash' };
+        }
+      }
+
+      // 4. CASO COLISÃO FRONTAL / LATERAL (CRASH NA PAREDE)
+      // O jogador penetrou lateralmente na plataforma abaixo da linha de pouso
+      if (px + pw > platLeft + 2 && px < platRight - 2) {
+        if (currentBottom > platTop + 10 && py < platBottom - 2) {
+          if (!wasAboveTop) {
+            return { type: 'crash' };
+          }
+        }
       }
 
     } else {
       // =========================================================================
-      // GRAVIDADE INVERTIDA (Jogador no teto ou correndo na face inferior)
+      // GRAVIDADE INVERTIDA (TETO)
       // =========================================================================
+      const currentTop = py;
+      const prevTop = (player.prevY !== undefined ? player.prevY : (py - player.vy * dt));
 
-      const horizontalOverlap = (px + pw > platLeft + 6) && (px < platRight - 4);
-
-      // CASO 1: JOGADOR ANDANDO NA FACE INFERIOR DA PLATAFORMA
-      if (horizontalOverlap && Math.abs(py - platBottom) <= 5 && player.vy <= 0) {
+      // 1. CONDUÇÃO ESTÁVEL NO TETO (RIDING)
+      if (horizontalOverlap && Math.abs(currentTop - platBottom) <= 6 && Math.abs(prevTop - platBottom) <= 6 && player.vy <= 0) {
         return { type: 'riding', surfaceY: platBottom };
       }
 
-      // CASO 2: ATERRISSAGEM NA FACE INFERIOR
-      const prevTop = py - player.vy * dt;
-      const currentTop = py;
+      // 2. ATERRISSAGEM NA FACE INFERIOR DA PLATAFORMA
+      const wasBelowBottom = prevTop >= platBottom - 8;
+      const isTouchingBottom = currentTop <= platBottom + 2 && (py + ph) > platTop + 4;
 
-      if (horizontalOverlap && prevTop >= platBottom - 14 && currentTop <= platBottom && player.vy <= 0) {
+      if (horizontalOverlap && wasBelowBottom && isTouchingBottom && player.vy <= 0) {
         return { type: 'land', surfaceY: platBottom };
       }
 
-      // CASO 3: COLISÃO FRONTAL NA GRAVIDADE INVERTIDA
-      if (px + pw > platLeft && px < platRight && py < platBottom - 8 && py + ph > platTop) {
-        return { type: 'crash' };
+      // 3. BATIDA NA FACE SUPERIOR ENQUANTO CAI PARA CIMA
+      if (horizontalOverlap && player.vy > 0) {
+        const prevBottom = (player.prevY !== undefined ? player.prevY : py) + ph;
+        if (currentTop + ph >= platTop - 2 && prevBottom <= platTop + 8) {
+          return { type: 'crash' };
+        }
+      }
+
+      // 4. COLISÃO FRONTAL NA GRAVIDADE INVERTIDA
+      if (px + pw > platLeft + 2 && px < platRight - 2) {
+        if (currentTop < platBottom - 10 && (py + ph) > platTop + 2) {
+          if (!wasBelowBottom) {
+            return { type: 'crash' };
+          }
+        }
       }
     }
 
     return null;
   }
 
+  /**
+   * Checagem de colisão com Serra Giratória Neon (Sawblade)
+   * Novo obstáculo clássico de Geometry Dash.
+   * @param {Player} player
+   * @param {Object} saw { x, y, radius }
+   * @returns {boolean}
+   */
+  static checkPlayerSaw(player, saw) {
+    const radius = saw.radius || 24;
+    const hitRadius = radius * (CONFIG.SAW_HIT_RATIO || 0.82);
+
+    // Margem de 3px no retângulo do player
+    const px = player.x + 3;
+    const py = player.y + 3;
+    const pw = player.w - 6;
+    const ph = player.h - 6;
+
+    // Ponto mais próximo no retângulo em relação ao centro da serra
+    const closeX = Math.max(px, Math.min(saw.x, px + pw));
+    const closeY = Math.max(py, Math.min(saw.y, py + ph));
+
+    const dx = saw.x - closeX;
+    const dy = saw.y - closeY;
+    return (dx * dx + dy * dy) <= (hitRadius * hitRadius);
+  }
 
   /**
    * Verifica se o centro do jogador está dentro do raio de ativação do Jump Orb
@@ -174,26 +256,8 @@ class CollisionEngine {
     const dx = px - ox;
     const dy = py - oy;
     const distSq = dx * dx + dy * dy;
-    const hitRadius = CONFIG.ORB_HIT_RADIUS || 65;
+    const hitRadius = CONFIG.ORB_HIT_RADIUS || 68;
     return distSq <= hitRadius * hitRadius;
-  }
-
-  /**
-   * Checagem de coleta de Moeda Secreta (AABB)
-   * @param {Player} player
-   * @param {Object} coin { x, y, size }
-   * @returns {boolean}
-   */
-  static checkPlayerCoin(player, coin) {
-    const size = coin.size || CONFIG.COIN_SIZE || 32;
-    const cx = coin.x - size / 2;
-    const cy = coin.y - size / 2;
-    return (
-      player.x + player.w > cx &&
-      player.x < cx + size &&
-      player.y + player.h > cy &&
-      player.y < cy + size
-    );
   }
 
   /**
@@ -228,4 +292,3 @@ class CollisionEngine {
     return false;
   }
 }
-

@@ -44,9 +44,6 @@ class GameManager {
     this.completedLevels = JSON.parse(localStorage.getItem('cyberpulse_completed') || '[]');
     this.attemptsHistory = JSON.parse(localStorage.getItem('cyberpulse_attempts') || '{}');
     this.bestPercentages = JSON.parse(localStorage.getItem('cyberpulse_bests') || '{}');
-    this.savedCoins = JSON.parse(localStorage.getItem('cyberpulse_coins') || '{}');
-    this.collectedCoinsThisRun = {};
-    this.speedMultiplier = 1.0;
     this.beatPulse = 0;
 
     // Conectar batida rítmica da bateria chiptune com os visuais da cena
@@ -273,30 +270,58 @@ class GameManager {
       this.dom.gameVictoryModal.classList.remove('active');
       this.openLevelSelect();
     });
+
+    // Auto-pausa inteligente quando o jogador minimiza a janela ou troca de aba
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && this.gameState === 'PLAYING') {
+        this.pauseGame();
+      }
+    });
+    window.addEventListener('blur', () => {
+      if (this.gameState === 'PLAYING') {
+        this.pauseGame();
+      }
+    });
   }
 
   /**
    * Controles do jogador: Teclado, Clique de Mouse e Toque em Mobile
    */
   bindInputs() {
-    const handleJumpAction = () => {
+    this.isJumpPressed = false;
+
+    const startJumpAction = () => {
+      this.isJumpPressed = true;
+      if (this.player) {
+        this.player.isJumpHeld = true;
+      }
       if (this.gameState === 'PLAYING') {
         const activeSkin = this.skinManager.getCurrentSkin();
         this.player.queueJump(this.level.jumpOrbs, this.audio, this.particles, activeSkin);
       }
     };
 
+    const stopJumpAction = () => {
+      this.isJumpPressed = false;
+      if (this.player) {
+        this.player.isJumpHeld = false;
+      }
+    };
 
     // Teclado
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
         e.preventDefault();
-        handleJumpAction();
+        if (!this.isJumpPressed) {
+          startJumpAction();
+        }
       } else if (e.code === 'KeyR') {
+        if (e.repeat) return;
         if (this.gameState === 'PLAYING' || this.gameState === 'PAUSED') {
           this.restartLevel();
         }
       } else if (e.code === 'Escape' || e.code === 'KeyP') {
+        if (e.repeat) return;
         if (this.gameState === 'PLAYING') {
           this.pauseGame();
         } else if (this.gameState === 'PAUSED') {
@@ -305,22 +330,40 @@ class GameManager {
       }
     });
 
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+        stopJumpAction();
+      }
+    });
+
     // Clique com o Mouse no Canvas Principal
     this.canvas.addEventListener('mousedown', (e) => {
       if (e.button === 0) {
-        handleJumpAction();
+        startJumpAction();
       }
+    });
+
+    window.addEventListener('mouseup', () => {
+      stopJumpAction();
     });
 
     // Toque na Tela para Celulares e Tablets
     window.addEventListener('touchstart', (e) => {
       // Ignora toques em botões e modais da interface
-      if (e.target.closest('.hud-btn') || e.target.closest('.cyber-btn') || e.target.closest('.close-btn') || e.target.closest('.skin-card')) {
+      if (e.target.closest('.hud-btn') || e.target.closest('.cyber-btn') || e.target.closest('.close-btn') || e.target.closest('.skin-card') || e.target.closest('.level-card')) {
         return;
       }
       e.preventDefault();
-      handleJumpAction();
+      startJumpAction();
     }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+      stopJumpAction();
+    });
+
+    window.addEventListener('touchcancel', () => {
+      stopJumpAction();
+    });
   }
 
   /**
@@ -361,10 +404,6 @@ class GameManager {
       const card = document.createElement('div');
       card.className = `level-card ${isCompleted ? 'completed' : ''} ${!isUnlocked ? 'locked' : ''}`;
 
-      const savedCoinsList = this.savedCoins[lvl.id] || [];
-      const coinsHtml = [0, 1, 2].map(cIdx => 
-        `<span class="card-coin ${savedCoinsList.includes(cIdx) ? 'collected' : ''}">★</span>`
-      ).join('');
       const best = isCompleted ? 100 : (this.bestPercentages[lvl.id] || 0);
 
       card.innerHTML = `
@@ -373,7 +412,6 @@ class GameManager {
           <span class="card-difficulty ${lvl.difficultyClass}">${lvl.difficultyName}</span>
         </div>
         <div class="card-title">${lvl.name}</div>
-        <div class="card-coins-row">${coinsHtml}</div>
         <div class="card-stats">
           <span>${isCompleted ? '⭐ Concluída' : (isUnlocked ? `Recorde: ${best}%` : '🔒 Bloqueada')}</span>
           <span>${attemptsCount > 0 ? `#${attemptsCount} tentativas` : ''}</span>
@@ -549,6 +587,7 @@ class GameManager {
   startLevel(index) {
     this.currentLevelIndex = index;
     this.level = LEVELS[this.currentLevelIndex];
+    this.sortedPits = [...(this.level.pits || [])].sort((a, b) => a.startX - b.startX);
     this.attempts = 1;
 
     this.dom.mainMenu.classList.remove('active');
@@ -560,6 +599,7 @@ class GameManager {
     this.updateHudInfo();
     this.resetPlayerToStart();
     this.gameState = 'PLAYING';
+    this.audio.stopMusic();
     this.audio.startMusic(this.level.speed / 400);
   }
 
@@ -567,20 +607,21 @@ class GameManager {
     this.attempts++;
     this.attemptsHistory[this.level.id] = (this.attemptsHistory[this.level.id] || 0) + 1;
     localStorage.setItem('cyberpulse_attempts', JSON.stringify(this.attemptsHistory));
+    this.sortedPits = [...(this.level.pits || [])].sort((a, b) => a.startX - b.startX);
 
     this.updateHudInfo();
     this.resetPlayerToStart();
     this.gameState = 'PLAYING';
+    this.audio.stopMusic();
     this.audio.startMusic(this.level.speed / 400);
   }
 
   resetPlayerToStart() {
     this.player.reset();
+    this.player.isJumpHeld = !!this.isJumpPressed;
     this.cameraX = 0;
     this.particles.clear();
     this.respawnTimer = 0;
-    this.speedMultiplier = 1.0;
-    this.collectedCoinsThisRun = {};
 
     // Restaurar Jump Orbs
     if (this.level.jumpOrbs) {
@@ -588,25 +629,7 @@ class GameManager {
         orb.used = false;
       }
     }
-
-    // Restaurar moedas na run
-    if (this.level.secretCoins) {
-      for (const coin of this.level.secretCoins) {
-        coin.collected = false;
-      }
-    }
-
-    // Restaurar Speed Portals
-    if (this.level.speedPortals) {
-      for (const portal of this.level.speedPortals) {
-        portal.activated = false;
-      }
-    }
-
-    this.updateCoinsHud();
   }
-
-
 
   pauseGame() {
     if (this.gameState !== 'PLAYING') return;
@@ -619,7 +642,8 @@ class GameManager {
     if (this.gameState !== 'PAUSED') return;
     this.gameState = 'PLAYING';
     this.dom.pauseModal.classList.remove('active');
-    this.audio.startMusic(this.level.speed / 400);
+    const speed = CONFIG.getLevelSpeed(this.level.id);
+    this.audio.startMusic(speed / 400);
   }
 
   killPlayer() {
@@ -627,6 +651,7 @@ class GameManager {
     this.player.isDead = true;
     this.screenShakeTime = 0.25;
 
+    this.audio.stopMusic();
     this.audio.playDeath();
     const activeSkin = this.skinManager.getCurrentSkin();
     this.particles.emitDeathExplosion(
@@ -643,7 +668,7 @@ class GameManager {
     }, 120);
 
     // Reinicia após breve pausa de impacto
-    this.respawnTimer = 0.38;
+    this.respawnTimer = 0.35;
   }
 
   completeLevel() {
@@ -665,12 +690,6 @@ class GameManager {
 
     this.dom.completeLevelTitle.textContent = `Fase ${this.level.id}: ${this.level.name}`;
     this.dom.completeAttempts.textContent = `#${this.attempts}`;
-
-    const savedCoinsCount = (this.savedCoins[this.level.id] || []).length;
-    const coinsEl = document.getElementById('completeCoins');
-    if (coinsEl) {
-      coinsEl.textContent = `${'★'.repeat(savedCoinsCount)}${'☆'.repeat(3 - savedCoinsCount)} (${savedCoinsCount}/3)`;
-    }
 
     this.bestPercentages[this.level.id] = 100;
     localStorage.setItem('cyberpulse_bests', JSON.stringify(this.bestPercentages));
@@ -729,25 +748,19 @@ class GameManager {
 
     const activeSkin = this.skinManager.getCurrentSkin();
 
-    // 1. Atualizar Jogador com velocidade dinâmica (speed portals)
-    const effectiveSpeed = this.level.speed * (this.speedMultiplier || 1.0);
+    // 1. Atualizar Jogador com velocidade fixa e previsível da fase
+    const effectiveSpeed = CONFIG.getLevelSpeed(this.level.id);
     this.player.update(dt, effectiveSpeed, this.audio, this.particles, this.level, activeSkin);
 
-    // 2. Câmera segue o jogador suavemente
-    const targetCamX = this.player.x - 220;
-    this.cameraX += (targetCamX - this.cameraX) * 0.15;
+    // 2. Câmera segue o jogador suavemente sem trepidação
+    const targetCamX = Math.max(0, this.player.x - 240);
+    this.cameraX += (targetCamX - this.cameraX) * 0.14;
 
-    // 3. Atualizar Barra de Progresso e Gravar Melhor Recorde (%)
+    // 3. Gravar Melhor Recorde (%) se atingido
     const progress = Math.min(100, Math.max(0, Math.floor((this.player.x / this.level.finishX) * 100)));
-    this.dom.progressBarFill.style.width = `${progress}%`;
-    this.dom.progressPercent.textContent = `${progress}%`;
-
     if (progress > (this.bestPercentages[this.level.id] || 0)) {
       this.bestPercentages[this.level.id] = progress;
       localStorage.setItem('cyberpulse_bests', JSON.stringify(this.bestPercentages));
-      if (this.dom.hudBestRecord) {
-        this.dom.hudBestRecord.textContent = `REC: ${progress}%`;
-      }
     }
 
     // 4. Checar Linha de Chegada
@@ -780,56 +793,6 @@ class GameManager {
       }
     }
 
-    // 5.1 Portais de Velocidade (Speed Portals)
-    if (this.level.speedPortals && this.level.speedPortals.length > 0) {
-      for (const portal of this.level.speedPortals) {
-        if (CollisionEngine.checkPlayerSpeedPortal(this.player, portal)) {
-          if (!portal.activated) {
-            portal.activated = true;
-            this.speedMultiplier = portal.speedMultiplier || 1.15;
-            try {
-              if (this.audio && typeof this.audio.playSpeedPortal === 'function') {
-                this.audio.playSpeedPortal();
-              }
-              if (this.particles && typeof this.particles.emitSpeedBoost === 'function') {
-                this.particles.emitSpeedBoost(portal.x, this.player.y + this.player.h / 2);
-              }
-              if (this.audio && typeof this.audio.startMusic === 'function') {
-                this.audio.startMusic((this.level.speed * this.speedMultiplier) / 400);
-              }
-            } catch (err) {
-              console.warn("Speed portal notice:", err);
-            }
-          }
-        }
-      }
-    }
-
-
-    // 5.2 Moedas Secretas Colecionáveis (3 por fase)
-    if (this.level.secretCoins) {
-      for (let i = 0; i < this.level.secretCoins.length; i++) {
-        const coin = this.level.secretCoins[i];
-        if (!coin.collected && CollisionEngine.checkPlayerCoin(this.player, coin)) {
-          coin.collected = true;
-          this.collectedCoinsThisRun[i] = true;
-
-          if (!this.savedCoins[this.level.id]) {
-            this.savedCoins[this.level.id] = [];
-          }
-          if (!this.savedCoins[this.level.id].includes(i)) {
-            this.savedCoins[this.level.id].push(i);
-            localStorage.setItem('cyberpulse_coins', JSON.stringify(this.savedCoins));
-          }
-
-          this.audio.playCoin();
-          this.particles.emitCoinCollect(coin.x, coin.y);
-          this.particles.emitFloatingText(coin.x, coin.y - 24, "★ MOEDA SECRETA! ★", "#ffea00");
-          this.updateCoinsHud();
-        }
-      }
-    }
-
     // 6. Trampolins Neon (Jump Pads)
     if (this.level.jumpPads) {
       for (const pad of this.level.jumpPads) {
@@ -852,37 +815,44 @@ class GameManager {
       }
     }
 
-
-    // 7. Colisão com Plataformas (Suporte a Pouso e Condução Estável)
+    // 7. Colisão com Plataformas (Verificação de proximidade ao jogador)
     let isCurrentlyOnPlatform = false;
-    for (const plat of this.level.platforms) {
-      if (plat.x + plat.w < this.cameraX - 40 || plat.x > this.cameraX + CONFIG.CANVAS_WIDTH + 40) continue;
+    let hasCrashed = false;
 
-      const col = CollisionEngine.handlePlayerPlatform(this.player, plat, dt);
-      if (col) {
-        if (col.type === 'crash') {
-          this.killPlayer();
-          return;
-        } else if (col.type === 'land') {
-          this.player.land(col.surfaceY, this.audio, this.particles, this.level.colors.primary, activeSkin);
-          isCurrentlyOnPlatform = true;
-          break;
-        } else if (col.type === 'riding') {
-          // Mantém o cubo firmemente apoiado no topo da plataforma para correr e pular suavemente
-          if (this.player.gravityDir === 1) {
-            this.player.y = col.surfaceY - this.player.h;
-          } else {
-            this.player.y = col.surfaceY;
+    if (this.level.platforms) {
+      for (const plat of this.level.platforms) {
+        if (plat.x + plat.w < this.player.x - 50 || plat.x > this.player.x + 80) continue;
+
+        const col = CollisionEngine.handlePlayerPlatform(this.player, plat, dt);
+        if (col) {
+          if (col.type === 'crash') {
+            hasCrashed = true;
+            break;
+          } else if (col.type === 'land') {
+            this.player.land(col.surfaceY, this.audio, this.particles, this.level.colors.primary, activeSkin, this.level);
+            isCurrentlyOnPlatform = true;
+            break;
+          } else if (col.type === 'riding') {
+            // Mantém o cubo firmemente apoiado no topo da plataforma para correr e pular suavemente
+            if (this.player.gravityDir === 1) {
+              this.player.y = col.surfaceY - this.player.h;
+            } else {
+              this.player.y = col.surfaceY;
+            }
+            this.player.vy = 0;
+            this.player.grounded = true;
+            this.player.coyoteTimer = CONFIG.COYOTE_TIME;
+            isCurrentlyOnPlatform = true;
+            break;
           }
-          this.player.vy = 0;
-          this.player.grounded = true;
-          this.player.coyoteTimer = CONFIG.COYOTE_TIME;
-          isCurrentlyOnPlatform = true;
-          break;
         }
       }
     }
 
+    if (hasCrashed) {
+      this.killPlayer();
+      return;
+    }
 
     // 8. Colisão com o Chão Padrão ou Teto Padrão
     if (!isCurrentlyOnPlatform) {
@@ -892,7 +862,7 @@ class GameManager {
         // Gravidade Normal
         if (!inPit) {
           if (this.player.y + this.player.h >= CONFIG.GROUND_Y) {
-            this.player.land(CONFIG.GROUND_Y, this.audio, this.particles, this.level.colors.primary, activeSkin);
+            this.player.land(CONFIG.GROUND_Y, this.audio, this.particles, this.level.colors.primary, activeSkin, this.level);
           } else {
             this.player.grounded = false;
           }
@@ -906,36 +876,55 @@ class GameManager {
       } else {
         // Gravidade Invertida (Teto)
         if (this.player.y <= CONFIG.CEILING_Y) {
-          this.player.land(CONFIG.CEILING_Y, this.audio, this.particles, this.level.colors.primary, activeSkin);
+          this.player.land(CONFIG.CEILING_Y, this.audio, this.particles, this.level.colors.primary, activeSkin, this.level);
         } else {
           this.player.grounded = false;
         }
       }
     }
 
-    // 9. Colisão com Espinhos
-    for (const spike of this.level.spikes) {
-      if (spike.x + spike.w < this.cameraX || spike.x > this.cameraX + CONFIG.CANVAS_WIDTH) continue;
+    // 9. Colisão com Espinhos (Checagem focada ao redor do jogador)
+    if (this.level.spikes) {
+      for (const spike of this.level.spikes) {
+        if (spike.x + spike.w < this.player.x - 40 || spike.x > this.player.x + 80) continue;
 
-      if (CollisionEngine.checkPlayerSpike(this.player, spike)) {
-        this.killPlayer();
-        return;
+        if (CollisionEngine.checkPlayerSpike(this.player, spike)) {
+          this.killPlayer();
+          return;
+        }
+      }
+    }
+
+    // 9.1 Colisão com Serras Giratórias Neon (Sawblades)
+    if (this.level.sawblades) {
+      for (const saw of this.level.sawblades) {
+        const r = saw.radius || 24;
+        if (saw.x + r < this.player.x - 40 || saw.x - r > this.player.x + 80) continue;
+
+        if (CollisionEngine.checkPlayerSaw(this.player, saw)) {
+          if (this.particles) this.particles.emitSawSpark(saw.x, saw.y);
+          this.killPlayer();
+          return;
+        }
       }
     }
 
     // 10. Obstáculos Móveis (Oscilam com seno do tempo)
-    const timeSec = performance.now() / 1000;
-    for (const hzd of this.level.movingHazards) {
-      const curY = hzd.baseY + Math.sin(timeSec * hzd.speed) * hzd.amplitude;
+    if (this.level.movingHazards) {
+      const timeSec = performance.now() / 1000;
+      for (const hzd of this.level.movingHazards) {
+        if (hzd.x + hzd.w < this.player.x - 50 || hzd.x > this.player.x + 80) continue;
+        const curY = hzd.baseY + Math.sin(timeSec * hzd.speed) * hzd.amplitude;
 
-      if (
-        this.player.x + this.player.w - 4 > hzd.x &&
-        this.player.x + 4 < hzd.x + hzd.w &&
-        this.player.y + this.player.h - 4 > curY &&
-        this.player.y + 4 < curY + hzd.h
-      ) {
-        this.killPlayer();
-        return;
+        if (
+          this.player.x + this.player.w - 4 > hzd.x &&
+          this.player.x + 4 < hzd.x + hzd.w &&
+          this.player.y + this.player.h - 4 > curY &&
+          this.player.y + 4 < curY + hzd.h
+        ) {
+          this.killPlayer();
+          return;
+        }
       }
     }
   }
@@ -982,11 +971,7 @@ class GameManager {
     this.drawFloorAndCeiling(ctx, colors);
 
     // Portais Gravitacionais
-    // Portais Gravitacionais
     this.drawPortals(ctx);
-
-    // Portais de Velocidade (Speed Portals)
-    this.drawSpeedPortals(ctx);
 
     // Trampolins Neon
     this.drawJumpPads(ctx);
@@ -994,11 +979,11 @@ class GameManager {
     // Jump Orbs (Orbes de Pulo Flutuantes)
     this.drawJumpOrbs(ctx);
 
-    // 3 Moedas Secretas Colecionáveis
-    this.drawSecretCoins(ctx);
-
     // Espinhos
     this.drawSpikes(ctx, colors);
+
+    // Serras Giratórias Neon (Sawblades)
+    this.drawSawblades(ctx, timeSec);
 
     // Perigos Móveis
     this.drawMovingHazards(ctx);
@@ -1070,7 +1055,7 @@ class GameManager {
     let curX = Math.max(0, this.cameraX - 100);
     const endX = this.cameraX + CONFIG.CANVAS_WIDTH + 100;
 
-    const sortedPits = [...this.level.pits].sort((a, b) => a.startX - b.startX);
+    const sortedPits = this.sortedPits || this.level.pits || [];
 
     while (curX < endX) {
       let nextPit = null;
@@ -1133,7 +1118,7 @@ class GameManager {
   drawPlatforms(ctx, colors) {
     ctx.save();
     for (const plat of this.level.platforms) {
-      if (plat.x + plat.w < this.cameraX || plat.x > this.cameraX + CONFIG.CANVAS_WIDTH) continue;
+      if (plat.x + plat.w < this.cameraX - 80 || plat.x > this.cameraX + CONFIG.CANVAS_WIDTH + 80) continue;
 
       const isBlock = plat.isBlock || (plat.w <= 60 && plat.h >= 35);
 
@@ -1215,7 +1200,7 @@ class GameManager {
   drawSpikes(ctx, colors) {
     ctx.save();
     for (const spike of this.level.spikes) {
-      if (spike.x + spike.w < this.cameraX || spike.x > this.cameraX + CONFIG.CANVAS_WIDTH) continue;
+      if (spike.x + spike.w < this.cameraX - 80 || spike.x > this.cameraX + CONFIG.CANVAS_WIDTH + 80) continue;
 
       const sx = spike.x;
       const sw = spike.w;
@@ -1246,6 +1231,78 @@ class GameManager {
       ctx.lineWidth = 2;
       ctx.strokeStyle = '#ffffff';
       ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /**
+   * Renderiza Serras Giratórias Neon (Sawblades) — Novo obstáculo Geometry Dash
+   */
+  drawSawblades(ctx, timeSec) {
+    if (!this.level.sawblades || this.level.sawblades.length === 0) return;
+    ctx.save();
+
+    for (const saw of this.level.sawblades) {
+      const r = saw.radius || 24;
+      if (saw.x + r + 80 < this.cameraX || saw.x - r - 80 > this.cameraX + CONFIG.CANVAS_WIDTH) continue;
+
+      ctx.save();
+      ctx.translate(saw.x, saw.y);
+      const angle = timeSec * (saw.spinSpeed || 6);
+      ctx.rotate(angle);
+
+      // Brilho neon externo
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = '#ff0055';
+
+      // Desenhar 8 dentes triangulares da serra
+      const teethCount = 8;
+      ctx.fillStyle = '#ff0055';
+      ctx.beginPath();
+      for (let i = 0; i < teethCount; i++) {
+        const a1 = (i / teethCount) * Math.PI * 2;
+        const a2 = a1 + (Math.PI / teethCount);
+        const toothR = r * 1.25;
+        const innerR = r * 0.75;
+
+        const x1 = Math.cos(a1) * innerR;
+        const y1 = Math.sin(a1) * innerR;
+        const xt = Math.cos(a1 + 0.2) * toothR;
+        const yt = Math.sin(a1 + 0.2) * toothR;
+        const x2 = Math.cos(a2) * innerR;
+        const y2 = Math.sin(a2) * innerR;
+
+        if (i === 0) ctx.moveTo(x1, y1);
+        else ctx.lineTo(x1, y1);
+        ctx.lineTo(xt, yt);
+        ctx.lineTo(x2, y2);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      // Disco interno metálico escuro
+      ctx.fillStyle = '#100308';
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.7, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Borda neon no disco
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+
+      // Núcleo luminoso central
+      ctx.fillStyle = '#ffaa00';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#ffaa00';
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.25, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-2, -2, 4, 4);
+
+      ctx.restore();
     }
     ctx.restore();
   }
@@ -1471,171 +1528,6 @@ class GameManager {
     ctx.restore();
   }
 
-  /**
-   * Renderiza as 3 Moedas Secretas Colecionáveis com Rotação 3D Simulada
-   */
-  drawSecretCoins(ctx) {
-    if (!this.level.secretCoins || this.level.secretCoins.length === 0) return;
-    const timeSec = performance.now() / 1000;
-    ctx.save();
-
-    for (let i = 0; i < this.level.secretCoins.length; i++) {
-      const coin = this.level.secretCoins[i];
-      if (coin.collected) continue; // Já coletada na run
-      if (coin.x + 50 < this.cameraX || coin.x - 50 > this.cameraX + CONFIG.CANVAS_WIDTH) continue;
-
-      const size = coin.size || CONFIG.COIN_SIZE || 32;
-      const scaleX = Math.cos(timeSec * 3.5 + i); // Efeito de moeda girando no eixo vertical
-      const floatY = coin.y + Math.sin(timeSec * 4 + i) * 5;
-
-      ctx.save();
-      ctx.translate(coin.x, floatY);
-      ctx.scale(Math.abs(scaleX), 1);
-
-      // Brilho Dourado Intenso
-      ctx.shadowBlur = 22;
-      ctx.shadowColor = '#ffd700';
-
-      // Corpo da Moeda
-      const coinGrad = ctx.createLinearGradient(-size / 2, -size / 2, size / 2, size / 2);
-      coinGrad.addColorStop(0, '#fff480');
-      coinGrad.addColorStop(0.5, '#ffd700');
-      coinGrad.addColorStop(1, '#ff9900');
-      ctx.fillStyle = coinGrad;
-      ctx.beginPath();
-      ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Borda Externa
-      ctx.lineWidth = 2.5;
-      ctx.strokeStyle = '#ffffff';
-      ctx.stroke();
-
-      // Anel Interno
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
-      ctx.beginPath();
-      ctx.arc(0, 0, size * 0.34, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Estrela Central
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '900 15px Orbitron, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('★', 0, 1);
-
-      ctx.restore();
-    }
-    ctx.restore();
-  }
-
-  /**
-   * Renderiza os Speed Portals (Portais de Aceleração com chevrons >>)
-   */
-  /**
-   * Renderiza os Speed Portals (Portais de Velocidade Translúcidos Neon estilo Geometry Dash)
-   */
-  drawSpeedPortals(ctx) {
-    if (!this.level.speedPortals || this.level.speedPortals.length === 0) return;
-    const timeSec = performance.now() / 1000;
-    ctx.save();
-
-    for (const portal of this.level.speedPortals) {
-      const pw = portal.w || 52;
-      if (portal.x + pw < this.cameraX - 60 || portal.x > this.cameraX + CONFIG.CANVAS_WIDTH + 60) continue;
-
-      const topY = CONFIG.CEILING_Y;
-      const bottomY = CONFIG.GROUND_Y;
-      const gateH = bottomY - topY;
-      const centerX = portal.x + pw / 2;
-
-      // Aura Holográfica Suave
-      const auraGrad = ctx.createLinearGradient(portal.x - 20, 0, portal.x + pw + 20, 0);
-      auraGrad.addColorStop(0, 'rgba(255, 140, 0, 0)');
-      auraGrad.addColorStop(0.5, 'rgba(255, 170, 0, 0.22)');
-      auraGrad.addColorStop(1, 'rgba(255, 140, 0, 0)');
-      ctx.fillStyle = auraGrad;
-      ctx.fillRect(portal.x - 20, topY, pw + 40, gateH);
-
-      // Coluna Translúcida Interna
-      const beamGrad = ctx.createLinearGradient(portal.x, 0, portal.x + pw, 0);
-      beamGrad.addColorStop(0, 'rgba(255, 170, 0, 0.35)');
-      beamGrad.addColorStop(0.5, 'rgba(255, 230, 100, 0.15)');
-      beamGrad.addColorStop(1, 'rgba(255, 170, 0, 0.35)');
-      ctx.fillStyle = beamGrad;
-      ctx.fillRect(portal.x + 4, topY, pw - 8, gateH);
-
-      // Linhas Laterais de Laser Neon
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = '#ffaa00';
-      ctx.shadowBlur = 16;
-      ctx.shadowColor = '#ff8800';
-      ctx.beginPath();
-      ctx.moveTo(portal.x + 3, topY);
-      ctx.lineTo(portal.x + 3, bottomY);
-      ctx.moveTo(portal.x + pw - 3, topY);
-      ctx.lineTo(portal.x + pw - 3, bottomY);
-      ctx.stroke();
-
-      // Chevrons Vetoriais Neon (>>) com animação de pulso rítmico
-      const chevronSpacing = 65;
-      const flowOffset = (timeSec * 80) % chevronSpacing;
-      ctx.lineWidth = 2.5;
-      ctx.strokeStyle = '#ffffff';
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = '#ffe600';
-
-      for (let cy = topY + 30 + flowOffset; cy <= bottomY - 30; cy += chevronSpacing) {
-        // Primeiro Chevron (>)
-        ctx.beginPath();
-        ctx.moveTo(centerX - 10, cy - 10);
-        ctx.lineTo(centerX - 3, cy);
-        ctx.lineTo(centerX - 10, cy + 10);
-        ctx.stroke();
-
-        // Segundo Chevron (>)
-        ctx.beginPath();
-        ctx.moveTo(centerX + 2, cy - 10);
-        ctx.lineTo(centerX + 9, cy);
-        ctx.lineTo(centerX + 2, cy + 10);
-        ctx.stroke();
-      }
-
-      // Suportes Tecnológicos discretos no chão e teto
-      ctx.fillStyle = '#140c02';
-      ctx.strokeStyle = '#ffaa00';
-      ctx.lineWidth = 2;
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = '#ffaa00';
-      ctx.fillRect(portal.x - 4, topY - 10, pw + 8, 16);
-      ctx.strokeRect(portal.x - 4, topY - 10, pw + 8, 16);
-
-      ctx.fillRect(portal.x - 4, bottomY - 6, pw + 8, 16);
-      ctx.strokeRect(portal.x - 4, bottomY - 6, pw + 8, 16);
-    }
-    ctx.restore();
-  }
-
-
-  /**
-   * Atualiza a exibição das 3 Moedas Secretas no HUD
-   */
-  updateCoinsHud() {
-    for (let i = 0; i < 3; i++) {
-      const coinEl = document.getElementById(`hudCoin${i + 1}`);
-      if (!coinEl) continue;
-
-      const isCollectedRun = !!this.collectedCoinsThisRun[i];
-      const isSaved = this.savedCoins[this.level.id] && this.savedCoins[this.level.id].includes(i);
-
-      if (isCollectedRun || isSaved) {
-        coinEl.classList.add('collected');
-      } else {
-        coinEl.classList.remove('collected');
-      }
-    }
-  }
 
   drawFinishLine(ctx, colors) {
     const fx = this.level.finishX;
@@ -1661,6 +1553,23 @@ class GameManager {
   }
 
   /**
+   * Atualização eficiente do HUD (chamado apenas 1x por frame, sem reflows desnecessários)
+   */
+  updateHUDProgress() {
+    if (this.gameState !== 'PLAYING' || !this.player || !this.level) return;
+    const progress = Math.min(100, Math.max(0, Math.floor((this.player.x / this.level.finishX) * 100)));
+    if (this.lastRenderedProgress !== progress) {
+      this.lastRenderedProgress = progress;
+      if (this.dom.progressBarFill) this.dom.progressBarFill.style.width = `${progress}%`;
+      if (this.dom.progressPercent) this.dom.progressPercent.textContent = `${progress}%`;
+      if (this.dom.hudBestRecord) {
+        const best = Math.max(progress, this.bestPercentages[this.level.id] || 0);
+        this.dom.hudBestRecord.textContent = `REC: ${best}%`;
+      }
+    }
+  }
+
+  /**
    * LOOP PRINCIPAL DE JOGO (60 FPS com delta-time suave)
    */
   gameLoop(currentTime) {
@@ -1668,14 +1577,23 @@ class GameManager {
     this.lastTime = currentTime;
 
     // Limita delta-time máximo para evitar saltos bruscos se o usuário trocar de aba
-    if (dt > 0.05) dt = 0.05;
+    if (dt > 0.08) dt = 0.08;
 
     // Decaimento do pulso de batida rítmica
     if (this.beatPulse > 0) {
       this.beatPulse = Math.max(0, this.beatPulse - dt * 3.5);
     }
 
-    this.update(dt);
+    // Sub-stepping de física para garantir precisão e estabilidade absoluta em qualquer FPS
+    const maxSubStep = 0.016667;
+    let remaining = dt;
+    while (remaining > 0) {
+      const step = Math.min(remaining, maxSubStep);
+      this.update(step);
+      remaining -= step;
+    }
+
+    this.updateHUDProgress();
     this.draw();
     this.drawSkinPreview(dt);
 

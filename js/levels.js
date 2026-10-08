@@ -1,2916 +1,2134 @@
 /**
  * ==============================================================================
  * CYBER PULSE — js/levels.js
- * Design Completo das 10 Fases Neon — ALTA DIFICULDADE (HARDCORE GEOMETRY DASH)
+ * Design Balanceado das 10 Fases Neon (Progressão Suave e Justa)
  * ==============================================================================
- * 
- * DIRETRIZES DE DESIGN DE ALTA DIFICULDADE:
- * 1. VELOCIDADES ACELERADAS: De 520 px/s a 1080 px/s para reflexos ágeis.
- * 2. SEQUÊNCIAS RÍTMICAS FRENETICAS:
- *    - Pulos consecutivos em espinhos simples, duplos e triplos.
- *    - Blocos sólidos combinados com espinhos logo na saída.
- *    - Corredores estreitos com espinhos no teto forçando saltos milimétricos.
- * 3. CADÊNCIA DE DESAFIOS CONSTANTE:
- *    - Padrões rítmicos ativos com espaçamentos contínuos.
- * 4. JUMP ORBS & TRAMPOLINS ENCADICADOS:
- *    - Saltos aéreos no ar sobre abismos profundos e fileiras de espinhos.
- * 5. 100% JUSTO E TESTADO:
- *    - Cada sequência foi calibrada e validada matematicamente.
  */
 
 'use strict';
 
 const LEVELS = [
-  {
-    "id": 1,
-    "name": "Neon Dawn",
-    "difficultyName": "Desafiador",
-    "difficultyClass": "diff-facil",
-    "speed": 520,
-    "finishX": 13000,
-    "colors": {
-      "primary": "#00f0ff",
-      "accent": "#0077ff",
-      "bgGrad1": "#050a1a",
-      "bgGrad2": "#0c1b3a",
-      "floorTop": "#00f0ff",
-      "floorBody": "#060b20"
+    {
+        "id":  1,
+        "name":  "Neon Dawn",
+        "difficultyName":  "Fácil",
+        "difficultyClass":  "diff-facil",
+        "speed":  420,
+        "finishX":  4800,
+        "colors":  {
+                       "primary":  "#00f0ff",
+                       "accent":  "#0077ff",
+                       "bgGrad1":  "#050a1a",
+                       "bgGrad2":  "#0c1b3a",
+                       "floorTop":  "#00f0ff",
+                       "floorBody":  "#060b20"
+                   },
+        "hints":  [
+                      {
+                          "x":  400,
+                          "y":  460,
+                          "text":  "BEM-VINDO! [ESPAÇO] OU [CLIQUE] PARA PULAR"
+                      },
+                      {
+                          "x":  1200,
+                          "y":  460,
+                          "text":  "PULO SIMPLES: SALTE SOBRE O ESPINHO"
+                      },
+                      {
+                          "x":  2150,
+                          "y":  450,
+                          "text":  "SUBA NA PLATAFORMA PARA AVANÇAR"
+                      },
+                      {
+                          "x":  3100,
+                          "y":  450,
+                          "text":  "MANTENHA O RITMO E PRECISÃƒO!"
+                      },
+                      {
+                          "x":  4100,
+                          "y":  460,
+                          "text":  "RETA FINAL — QUASE LÁ!"
+                      }
+                  ],
+        "secretCoins":  [
+
+                        ],
+        "jumpOrbs":  [
+
+                     ],
+        "jumpPads":  [
+
+                     ],
+        "speedPortals":  [
+
+                         ],
+        "gravityPortals":  [
+
+                           ],
+        "spikes":  [
+                       {
+                           "x":  950,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1450,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2000,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2850,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3920,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  4450,
+                           "w":  36,
+                           "h":  38
+                       }
+                   ],
+        "platforms":  [
+                          {
+                              "x":  2280,
+                              "y":  515,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  3150,
+                              "y":  490,
+                              "w":  280,
+                              "h":  22,
+                              "isBlock":  false
+                          }
+                      ],
+        "pits":  [
+
+                 ],
+        "sawblades":  [
+
+                      ],
+        "movingHazards":  [
+
+                          ]
     },
-    "hints": [
-      {
-        "x": 500,
-        "y": 460,
-        "text": "MODO DIFÍCIL: FOCO TOTAL NO RITMO!"
-      },
-      {
-        "x": 2300,
-        "y": 460,
-        "text": "SALTOS RÁPIDOS: ESPINHOS E BLOCOS!"
-      },
-      {
-        "x": 5000,
-        "y": 440,
-        "text": "PARTE 2: PARKOUR E JUMP ORB AÉREO!"
-      },
-      {
-        "x": 8600,
-        "y": 460,
-        "text": "PARTE 3: TRAMPOLIM E CLÍMAX FINAL!"
-      }
-    ],
-    "secretCoins": [
-      {
-        "id": 0,
-        "x": 2750,
-        "y": 420
-      },
-      {
-        "id": 1,
-        "x": 6700,
-        "y": 350
-      },
-      {
-        "id": 2,
-        "x": 11400,
-        "y": 420
-      }
-    ],
-    "jumpOrbs": [
-      {
-        "x": 6200,
-        "y": 450,
-        "radius": 22,
-        "jumpForce": 750,
-        "color": "#ffea00"
-      },
-      {
-        "x": 7400,
-        "y": 430,
-        "radius": 22,
-        "jumpForce": 750,
-        "color": "#ffea00"
-      }
-    ],
-    "speedPortals": [
-      {
-        "x": 10400,
-        "w": 52,
-        "speedMultiplier": 1.15
-      }
-    ],
-    "spikes": [
-      {
-        "x": 900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1350,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2236,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3550,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3950,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3986,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 4900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 5350,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 6200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 6850,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 7400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 8050,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 8450,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 9200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 9236,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 9800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10850,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 11300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 11336,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 11850,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12250,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12286,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12700,
-        "w": 36,
-        "h": 42
-      }
-    ],
-    "pits": [
-      {
-        "startX": 4350,
-        "endX": 4600
-      },
-      {
-        "startX": 5550,
-        "endX": 6050
-      }
-    ],
-    "platforms": [
-      {
-        "x": 2700,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 5580,
-        "y": 485,
-        "w": 450,
-        "h": 25
-      },
-      {
-        "x": 6550,
-        "y": 460,
-        "w": 220,
-        "h": 25
-      },
-      {
-        "x": 8350,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 9650,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      }
-    ],
-    "jumpPads": [
-      {
-        "x": 8950,
-        "y": 558,
-        "w": 48,
-        "h": 12,
-        "bounceForce": 970
-      }
-    ],
-    "movingHazards": [],
-    "gravityPortals": []
-  },
-  {
-    "id": 2,
-    "name": "Cyber Chasm",
-    "difficultyName": "Rápido",
-    "difficultyClass": "diff-iniciante",
-    "speed": 580,
-    "finishX": 15000,
-    "colors": {
-      "primary": "#00ff88",
-      "accent": "#00b862",
-      "bgGrad1": "#04140e",
-      "bgGrad2": "#08291c",
-      "floorTop": "#00ff88",
-      "floorBody": "#051811"
+    {
+        "id":  2,
+        "name":  "Cyber Chasm",
+        "difficultyName":  "Iniciante",
+        "difficultyClass":  "diff-iniciante",
+        "speed":  435,
+        "finishX":  6200,
+        "colors":  {
+                       "primary":  "#00ff88",
+                       "accent":  "#00aa55",
+                       "bgGrad1":  "#03140a",
+                       "bgGrad2":  "#072416",
+                       "floorTop":  "#00ff88",
+                       "floorBody":  "#03180c"
+                   },
+        "hints":  [
+                      {
+                          "x":  400,
+                          "y":  460,
+                          "text":  "FASE 2: PARKOUR DE PLATAFORMAS"
+                      },
+                      {
+                          "x":  1600,
+                          "y":  460,
+                          "text":  "ESPINHOS DUPLOS: SALTO NO MOMENTO CERTO"
+                      },
+                      {
+                          "x":  2800,
+                          "y":  460,
+                          "text":  "TRAMPOLIM AMARELO: SALTO GIGANTE!"
+                      },
+                      {
+                          "x":  4200,
+                          "y":  450,
+                          "text":  "DEGRAUS DE PLATAFORMAS"
+                      }
+                  ],
+        "secretCoins":  [
+
+                        ],
+        "jumpOrbs":  [
+
+                     ],
+        "jumpPads":  [
+                         {
+                             "x":  2950,
+                             "y":  558,
+                             "w":  48,
+                             "h":  12,
+                             "bounceForce":  880
+                         }
+                     ],
+        "speedPortals":  [
+
+                         ],
+        "gravityPortals":  [
+
+                           ],
+        "spikes":  [
+                       {
+                           "x":  800,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1250,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1750,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1786,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2600,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3200,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3236,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5300,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5336,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5920,
+                           "w":  36,
+                           "h":  38
+                       }
+                   ],
+        "platforms":  [
+                          {
+                              "x":  2200,
+                              "y":  515,
+                              "w":  220,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  3550,
+                              "y":  505,
+                              "w":  280,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  4300,
+                              "y":  515,
+                              "w":  200,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  4660,
+                              "y":  470,
+                              "w":  220,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  5650,
+                              "y":  528,
+                              "w":  42,
+                              "h":  42,
+                              "isBlock":  true
+                          }
+                      ],
+        "pits":  [
+                     {
+                         "startX":  3500,
+                         "endX":  3900
+                     }
+                 ],
+        "sawblades":  [
+
+                      ],
+        "movingHazards":  [
+
+                          ]
     },
-    "hints": [
-      {
-        "x": 500,
-        "y": 460,
-        "text": "580 PX/S! REAÇÃO INSTANTÂNEA!"
-      },
-      {
-        "x": 3800,
-        "y": 440,
-        "text": "DEGRAUS RÁPIDOS SOBRE O ABISMO!"
-      },
-      {
-        "x": 7000,
-        "y": 440,
-        "text": "JUMP ORBS EM SÉRIE NO AR!"
-      },
-      {
-        "x": 10400,
-        "y": 460,
-        "text": "CUIDADO COM O ESPINHO TRIPLO!"
-      }
-    ],
-    "secretCoins": [
-      {
-        "id": 0,
-        "x": 2620,
-        "y": 420
-      },
-      {
-        "id": 1,
-        "x": 7700,
-        "y": 340
-      },
-      {
-        "id": 2,
-        "x": 13150,
-        "y": 410
-      }
-    ],
-    "jumpOrbs": [
-      {
-        "x": 7300,
-        "y": 450,
-        "radius": 22,
-        "jumpForce": 760,
-        "color": "#ffea00"
-      },
-      {
-        "x": 7750,
-        "y": 420,
-        "radius": 22,
-        "jumpForce": 760,
-        "color": "#ffea00"
-      }
-    ],
-    "speedPortals": [
-      {
-        "x": 11400,
-        "w": 52,
-        "speedMultiplier": 1.15
-      }
-    ],
-    "spikes": [
-      {
-        "x": 1000,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1450,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2236,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3000,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3450,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 5050,
-        "w": 36,
-        "h": 42,
-        "y": 388
-      },
-      {
-        "x": 6100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 6600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 7300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 7750,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 8350,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 9200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 9600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10000,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10750,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10786,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10822,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 11900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12350,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12836,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 13400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 13900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 13936,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 14450,
-        "w": 36,
-        "h": 42
-      }
-    ],
-    "pits": [
-      {
-        "startX": 4100,
-        "endX": 5500
-      },
-      {
-        "startX": 8600,
-        "endX": 8900
-      }
-    ],
-    "platforms": [
-      {
-        "x": 2600,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 4150,
-        "y": 485,
-        "w": 380,
-        "h": 25
-      },
-      {
-        "x": 4700,
-        "y": 430,
-        "w": 520,
-        "h": 25
-      },
-      {
-        "x": 6050,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 8550,
-        "y": 485,
-        "w": 400,
-        "h": 25
-      },
-      {
-        "x": 10100,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      }
-    ],
-    "jumpPads": [
-      {
-        "x": 10350,
-        "y": 558,
-        "w": 48,
-        "h": 12,
-        "bounceForce": 970
-      }
-    ],
-    "movingHazards": [],
-    "gravityPortals": []
-  },
-  {
-    "id": 3,
-    "name": "Kinetic Wave",
-    "difficultyName": "Difícil",
-    "difficultyClass": "diff-intermediaria",
-    "speed": 640,
-    "finishX": 16500,
-    "colors": {
-      "primary": "#ffaa00",
-      "accent": "#ff5500",
-      "bgGrad1": "#1a0c02",
-      "bgGrad2": "#2a1506",
-      "floorTop": "#ffaa00",
-      "floorBody": "#1f0f04"
+    {
+        "id":  3,
+        "name":  "Kinetic Wave",
+        "difficultyName":  "Intermediária",
+        "difficultyClass":  "diff-intermediaria",
+        "speed":  450,
+        "finishX":  7600,
+        "colors":  {
+                       "primary":  "#ff0077",
+                       "accent":  "#ff00bb",
+                       "bgGrad1":  "#14030d",
+                       "bgGrad2":  "#26061a",
+                       "floorTop":  "#ff0077",
+                       "floorBody":  "#1a0311"
+                   },
+        "hints":  [
+                      {
+                          "x":  400,
+                          "y":  460,
+                          "text":  "FASE 3: VELOCIDADE ACELERADA E SERRAS NEON"
+                      },
+                      {
+                          "x":  1900,
+                          "y":  460,
+                          "text":  "NOVO: SERRA GIRATÓRIA — CALCULE O TEMPO!"
+                      },
+                      {
+                          "x":  3100,
+                          "y":  440,
+                          "text":  "JUMP ORB: CLIQUE NO AR!"
+                      },
+                      {
+                          "x":  4700,
+                          "y":  450,
+                          "text":  "PORTAL VERTICAL: GRAVIDADE INVERTIDA (TETO)!"
+                      },
+                      {
+                          "x":  6200,
+                          "y":  240,
+                          "text":  "PORTAL DE RETORNO: VOLTE AO CHÃO!"
+                      }
+                  ],
+        "secretCoins":  [
+
+                        ],
+        "jumpOrbs":  [
+                         {
+                             "x":  3500,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  750,
+                             "color":  "#ffea00"
+                         }
+                     ],
+        "jumpPads":  [
+
+                     ],
+        "speedPortals":  [
+
+                         ],
+        "gravityPortals":  [
+                               {
+                                   "x":  5020,
+                                   "w":  52,
+                                   "targetGravity":  -1
+                               },
+                               {
+                                   "x":  6480,
+                                   "w":  52,
+                                   "targetGravity":  1
+                               }
+                           ],
+        "spikes":  [
+                       {
+                           "x":  900,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1400,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1436,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2150,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2850,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3250,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3850,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  4750,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5380,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  6280,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  7080,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  7340,
+                           "w":  36,
+                           "h":  38
+                       }
+                   ],
+        "platforms":  [
+                          {
+                              "x":  2400,
+                              "y":  510,
+                              "w":  220,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  4100,
+                              "y":  505,
+                              "w":  240,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  5660,
+                              "y":  150,
+                              "w":  240,
+                              "h":  35,
+                              "isBlock":  true
+                          },
+                          {
+                              "x":  6650,
+                              "y":  515,
+                              "w":  200,
+                              "h":  22,
+                              "isBlock":  false
+                          }
+                      ],
+        "pits":  [
+                     {
+                         "startX":  3400,
+                         "endX":  3700
+                     }
+                 ],
+        "sawblades":  [
+                          {
+                              "x":  2050,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  6
+                          },
+                          {
+                              "x":  4560,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  -6
+                          },
+                          {
+                              "x":  6050,
+                              "y":  200,
+                              "radius":  24,
+                              "spinSpeed":  6
+                          }
+                      ],
+        "movingHazards":  [
+
+                          ]
     },
-    "hints": [
-      {
-        "x": 600,
-        "y": 460,
-        "text": "640 PX/S! FOCO NO RITMO ACELERADO!"
-      },
-      {
-        "x": 4400,
-        "y": 460,
-        "text": "DEGRAU E PLATAFORMA ELEVADA!"
-      },
-      {
-        "x": 8000,
-        "y": 440,
-        "text": "JUMP ORB NO AR!"
-      },
-      {
-        "x": 11000,
-        "y": 460,
-        "text": "SPEED BOOST + INVERSÃO GRAVITACIONAL!"
-      }
-    ],
-    "secretCoins": [
-      {
-        "id": 0,
-        "x": 2820,
-        "y": 420
-      },
-      {
-        "id": 1,
-        "x": 8550,
-        "y": 380
-      },
-      {
-        "id": 2,
-        "x": 13400,
-        "y": 220
-      }
-    ],
-    "jumpOrbs": [
-      {
-        "x": 8500,
-        "y": 450,
-        "radius": 22,
-        "jumpForce": 760,
-        "color": "#ffea00"
-      }
-    ],
-    "speedPortals": [
-      {
-        "x": 11200,
-        "w": 52,
-        "speedMultiplier": 1.2
-      }
-    ],
-    "spikes": [
-      {
-        "x": 1100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2450,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2486,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 4200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 6850,
-        "w": 36,
-        "h": 42,
-        "y": 398
-      },
-      {
-        "x": 7800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 8500,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 9300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 9900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10450,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10486,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12700,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 13350,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 13750,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 13786,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 14900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 15350,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 15386,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 15850,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 16150,
-        "w": 36,
-        "h": 42
-      }
-    ],
-    "pits": [
-      {
-        "startX": 4700,
-        "endX": 4950
-      },
-      {
-        "startX": 6200,
-        "endX": 7200
-      }
-    ],
-    "platforms": [
-      {
-        "x": 2800,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 6150,
-        "y": 485,
-        "w": 300,
-        "h": 25
-      },
-      {
-        "x": 6400,
-        "y": 440,
-        "w": 820,
-        "h": 25
-      },
-      {
-        "x": 7600,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 10000,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      }
-    ],
-    "jumpPads": [],
-    "movingHazards": [
-      {
-        "x": 5500,
-        "baseY": 380,
-        "w": 40,
-        "h": 40,
-        "speed": 2.4,
-        "amplitude": 50,
-        "color": "#ff5500"
-      }
-    ],
-    "gravityPortals": [
-      {
-        "x": 11900,
-        "w": 52,
-        "targetGravity": -1
-      },
-      {
-        "x": 14200,
-        "w": 52,
-        "targetGravity": 1
-      }
-    ]
-  },
-  {
-    "id": 4,
-    "name": "Gravity Nexus",
-    "difficultyName": "Muito Difícil",
-    "difficultyClass": "diff-dificil",
-    "speed": 700,
-    "finishX": 18000,
-    "colors": {
-      "primary": "#ff0077",
-      "accent": "#c000bb",
-      "bgGrad1": "#180210",
-      "bgGrad2": "#2b0520",
-      "floorTop": "#ff0077",
-      "floorBody": "#1e0415"
+    {
+        "id":  4,
+        "name":  "Gravity Nexus",
+        "difficultyName":  "Avançado",
+        "difficultyClass":  "diff-dificil",
+        "speed":  470,
+        "finishX":  9200,
+        "colors":  {
+                       "primary":  "#9d00ff",
+                       "accent":  "#bf00ff",
+                       "bgGrad1":  "#0f021f",
+                       "bgGrad2":  "#210444",
+                       "floorTop":  "#9d00ff",
+                       "floorBody":  "#130326"
+                   },
+        "hints":  [
+                      {
+                          "x":  400,
+                          "y":  460,
+                          "text":  "FASE 4: DESAFIO AVANÇADO — FOCO TOTAL!"
+                      },
+                      {
+                          "x":  2000,
+                          "y":  460,
+                          "text":  "CADÊNCIA RÍTMICA: ESPINHOS E SERRAS"
+                      },
+                      {
+                          "x":  3800,
+                          "y":  440,
+                          "text":  "CADÃŠNCIA PURA: DOMINE O AR!"
+                      },
+                      {
+                          "x":  5600,
+                          "y":  450,
+                          "text":  "INVERSÃO RÁPIDA: CHÃO E TETO"
+                      },
+                      {
+                          "x":  7700,
+                          "y":  460,
+                          "text":  "SEQUÊNCIA FINAL — MANTENHA O RITMO!"
+                      }
+                  ],
+        "secretCoins":  [
+
+                        ],
+        "jumpOrbs":  [
+                         {
+                             "x":  4900,
+                             "y":  430,
+                             "radius":  22,
+                             "jumpForce":  750,
+                             "color":  "#ffea00"
+                         },
+                         {
+                             "x":  7440,
+                             "y":  430,
+                             "radius":  22,
+                             "jumpForce":  750,
+                             "color":  "#ffea00"
+                         }
+                     ],
+        "jumpPads":  [
+                         {
+                             "x":  6850,
+                             "y":  558,
+                             "w":  48,
+                             "h":  12,
+                             "bounceForce":  920
+                         }
+                     ],
+        "speedPortals":  [
+
+                         ],
+        "gravityPortals":  [
+                               {
+                                   "x":  5800,
+                                   "w":  52,
+                                   "targetGravity":  -1
+                               },
+                               {
+                                   "x":  7200,
+                                   "w":  52,
+                                   "targetGravity":  1
+                               }
+                           ],
+        "spikes":  [
+                       {
+                           "x":  850,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1300,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1336,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1850,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2220,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2256,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3120,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3880,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3916,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  4400,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  4650,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  6150,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  6186,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  7650,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  7940,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  7976,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  8880,
+                           "w":  36,
+                           "h":  38
+                       }
+                   ],
+        "platforms":  [
+                          {
+                              "x":  2500,
+                              "y":  510,
+                              "w":  200,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  3420,
+                              "y":  475,
+                              "w":  220,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  5200,
+                              "y":  505,
+                              "w":  240,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  6460,
+                              "y":  150,
+                              "w":  240,
+                              "h":  35,
+                              "isBlock":  true
+                          },
+                          {
+                              "x":  8250,
+                              "y":  510,
+                              "w":  200,
+                              "h":  22,
+                              "isBlock":  false
+                          }
+                      ],
+        "pits":  [
+                     {
+                         "startX":  4750,
+                         "endX":  5100
+                     }
+                 ],
+        "sawblades":  [
+                          {
+                              "x":  1650,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  7
+                          },
+                          {
+                              "x":  2850,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  -7
+                          },
+                          {
+                              "x":  5620,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  7
+                          },
+                          {
+                              "x":  6940,
+                              "y":  210,
+                              "radius":  24,
+                              "spinSpeed":  -7
+                          },
+                          {
+                              "x":  7800,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  7
+                          }
+                      ],
+        "movingHazards":  [
+                              {
+                                  "x":  3750,
+                                  "baseY":  420,
+                                  "amplitude":  50,
+                                  "speed":  4,
+                                  "w":  36,
+                                  "h":  36,
+                                  "color":  "#bf00ff"
+                              }
+                          ]
     },
-    "hints": [
-      {
-        "x": 600,
-        "y": 460,
-        "text": "700 PX/S! AGILIDADE E CONTROLE NO TETO!"
-      },
-      {
-        "x": 3800,
-        "y": 350,
-        "text": "▲ INVERSÃO GRAVITACIONAL IMEDIATA!"
-      },
-      {
-        "x": 8600,
-        "y": 350,
-        "text": "▼ RETORNO AO CHÃO! CLÍMAX EXTREMO!"
-      }
-    ],
-    "secretCoins": [
-      {
-        "id": 0,
-        "x": 2320,
-        "y": 420
-      },
-      {
-        "id": 1,
-        "x": 7100,
-        "y": 230
-      },
-      {
-        "id": 2,
-        "x": 14200,
-        "y": 410
-      }
-    ],
-    "jumpOrbs": [
-      {
-        "x": 11400,
-        "y": 450,
-        "radius": 22,
-        "jumpForce": 760,
-        "color": "#ffea00"
-      }
-    ],
-    "speedPortals": [
-      {
-        "x": 13000,
-        "w": 52,
-        "speedMultiplier": 1.15
-      }
-    ],
-    "spikes": [
-      {
-        "x": 1200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2550,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2586,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 5200,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 5900,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 6600,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 7100,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 7136,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 7850,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 9900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10450,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10486,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10522,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 11400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12150,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 13800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 13836,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 14750,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 15450,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 16150,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 16850,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 17350,
-        "w": 36,
-        "h": 42
-      }
-    ],
-    "pits": [
-      {
-        "startX": 12350,
-        "endX": 12700
-      }
-    ],
-    "platforms": [
-      {
-        "x": 2750,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 7300,
-        "y": 150,
-        "w": 50,
-        "h": 40,
-        "isBlock": true
-      },
-      {
-        "x": 12300,
-        "y": 485,
-        "w": 450,
-        "h": 25
-      },
-      {
-        "x": 14500,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      }
-    ],
-    "jumpPads": [
-      {
-        "x": 13400,
-        "y": 558,
-        "w": 48,
-        "h": 12,
-        "bounceForce": 980
-      }
-    ],
-    "movingHazards": [],
-    "gravityPortals": [
-      {
-        "x": 4100,
-        "w": 52,
-        "targetGravity": -1
-      },
-      {
-        "x": 8800,
-        "w": 52,
-        "targetGravity": 1
-      }
-    ]
-  },
-  {
-    "id": 5,
-    "name": "Overclock Sprint",
-    "difficultyName": "Insano",
-    "difficultyClass": "diff-avancada",
-    "speed": 780,
-    "finishX": 19500,
-    "colors": {
-      "primary": "#ff2233",
-      "accent": "#ff7700",
-      "bgGrad1": "#1c0307",
-      "bgGrad2": "#30080d",
-      "floorTop": "#ff2233",
-      "floorBody": "#220409"
+    {
+        "id":  5,
+        "name":  "Overclock Sprint",
+        "difficultyName":  "Expert",
+        "difficultyClass":  "diff-avancada",
+        "speed":  490,
+        "finishX":  10500,
+        "colors":  {
+                       "primary":  "#ffaa00",
+                       "accent":  "#ff5500",
+                       "bgGrad1":  "#180a02",
+                       "bgGrad2":  "#301404",
+                       "floorTop":  "#ffaa00",
+                       "floorBody":  "#1a0b02"
+                   },
+        "hints":  [
+                      {
+                          "x":  400,
+                          "y":  460,
+                          "text":  "FASE 5: OVERCLOCK SPRINT - VELOCIDADE 490"
+                      },
+                      {
+                          "x":  4500,
+                          "y":  450,
+                          "text":  "CHAIN DE SALTOS EM SERRAS E ORBES"
+                      }
+                  ],
+        "secretCoins":  [
+
+                        ],
+        "jumpOrbs":  [
+                         {
+                             "x":  4200,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  760,
+                             "color":  "#ffea00"
+                         },
+                         {
+                             "x":  7200,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  760,
+                             "color":  "#ffea00"
+                         }
+                     ],
+        "jumpPads":  [
+                         {
+                             "x":  5750,
+                             "y":  558,
+                             "w":  48,
+                             "h":  12,
+                             "bounceForce":  940
+                         }
+                     ],
+        "speedPortals":  [
+
+                         ],
+        "gravityPortals":  [
+
+                           ],
+        "spikes":  [
+                       {
+                           "x":  900,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1400,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1436,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2000,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2440,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2476,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3360,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3800,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  4980,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5300,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5336,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  6400,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  6900,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  7900,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  8300,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  8800,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  9780,
+                           "w":  36,
+                           "h":  38
+                       }
+                   ],
+        "platforms":  [
+                          {
+                              "x":  2700,
+                              "y":  510,
+                              "w":  220,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  4500,
+                              "y":  505,
+                              "w":  240,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  6000,
+                              "y":  510,
+                              "w":  220,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  7400,
+                              "y":  500,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  9100,
+                              "y":  510,
+                              "w":  220,
+                              "h":  22,
+                              "isBlock":  false
+                          }
+                      ],
+        "pits":  [
+                     {
+                         "startX":  4100,
+                         "endX":  4450
+                     }
+                 ],
+        "sawblades":  [
+                          {
+                              "x":  1750,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  8
+                          },
+                          {
+                              "x":  3600,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  -8
+                          },
+                          {
+                              "x":  6720,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  8
+                          },
+                          {
+                              "x":  8550,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  -8
+                          }
+                      ],
+        "movingHazards":  [
+                              {
+                                  "x":  5050,
+                                  "baseY":  430,
+                                  "amplitude":  55,
+                                  "speed":  4.5,
+                                  "w":  36,
+                                  "h":  36,
+                                  "color":  "#ffaa00"
+                              }
+                          ]
     },
-    "hints": [
-      {
-        "x": 600,
-        "y": 460,
-        "text": "780 PX/S! VELOCIDADE INSANA! NÃO PISQUE!"
-      },
-      {
-        "x": 4200,
-        "y": 440,
-        "text": "DEGRAUS EM ULTRA-VELOCIDADE!"
-      },
-      {
-        "x": 8800,
-        "y": 460,
-        "text": "DESVIE DO PERIGO OSCILANTE!"
-      }
-    ],
-    "secretCoins": [
-      {
-        "id": 0,
-        "x": 2620,
-        "y": 420
-      },
-      {
-        "id": 1,
-        "x": 5350,
-        "y": 350
-      },
-      {
-        "id": 2,
-        "x": 13700,
-        "y": 400
-      }
-    ],
-    "jumpOrbs": [
-      {
-        "x": 7900,
-        "y": 450,
-        "radius": 22,
-        "jumpForce": 770,
-        "color": "#ffea00"
-      }
-    ],
-    "speedPortals": [
-      {
-        "x": 13200,
-        "w": 52,
-        "speedMultiplier": 1.18
-      }
-    ],
-    "spikes": [
-      {
-        "x": 1300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2500,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2536,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 4000,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 6500,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 7200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 7900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 8700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 9400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 13800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 13836,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 13872,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 14600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 15200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 15236,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 16100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 16900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 17700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 17736,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 17772,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 18700,
-        "w": 36,
-        "h": 42
-      }
-    ],
-    "pits": [
-      {
-        "startX": 4500,
-        "endX": 5700
-      },
-      {
-        "startX": 11000,
-        "endX": 11400
-      }
-    ],
-    "platforms": [
-      {
-        "x": 3000,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 4550,
-        "y": 485,
-        "w": 420,
-        "h": 25
-      },
-      {
-        "x": 5100,
-        "y": 430,
-        "w": 620,
-        "h": 25
-      },
-      {
-        "x": 9000,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 10950,
-        "y": 480,
-        "w": 500,
-        "h": 25
-      },
-      {
-        "x": 16300,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      }
-    ],
-    "jumpPads": [
-      {
-        "x": 13400,
-        "y": 558,
-        "w": 48,
-        "h": 12,
-        "bounceForce": 980
-      }
-    ],
-    "movingHazards": [
-      {
-        "x": 9600,
-        "baseY": 385,
-        "w": 40,
-        "h": 40,
-        "speed": 2.6,
-        "amplitude": 50,
-        "color": "#ff2233"
-      }
-    ],
-    "gravityPortals": []
-  },
-  {
-    "id": 6,
-    "name": "Dual Flux",
-    "difficultyName": "Demon",
-    "difficultyClass": "diff-mestre",
-    "speed": 840,
-    "finishX": 21000,
-    "colors": {
-      "primary": "#ffee00",
-      "accent": "#00f0ff",
-      "bgGrad1": "#141400",
-      "bgGrad2": "#242205",
-      "floorTop": "#ffee00",
-      "floorBody": "#1a1902"
+    {
+        "id":  6,
+        "name":  "Dual Flux",
+        "difficultyName":  "Mestre",
+        "difficultyClass":  "diff-mestre",
+        "speed":  510,
+        "finishX":  11500,
+        "colors":  {
+                       "primary":  "#00f0ff",
+                       "accent":  "#ff0077",
+                       "bgGrad1":  "#040c1c",
+                       "bgGrad2":  "#190520",
+                       "floorTop":  "#00f0ff",
+                       "floorBody":  "#040f22"
+                   },
+        "hints":  [
+                      {
+                          "x":  400,
+                          "y":  460,
+                          "text":  "FASE 6: FLUXO DUPLO — DOMINE AS DUAS GRAVIDADES"
+                      }
+                  ],
+        "secretCoins":  [
+
+                        ],
+        "jumpOrbs":  [
+                         {
+                             "x":  4500,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  760,
+                             "color":  "#ffea00"
+                         },
+                         {
+                             "x":  8800,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  760,
+                             "color":  "#ffea00"
+                         }
+                     ],
+        "jumpPads":  [
+                         {
+                             "x":  7800,
+                             "y":  558,
+                             "w":  48,
+                             "h":  12,
+                             "bounceForce":  950
+                         }
+                     ],
+        "speedPortals":  [
+
+                         ],
+        "gravityPortals":  [
+                               {
+                                   "x":  5200,
+                                   "w":  52,
+                                   "targetGravity":  -1
+                               },
+                               {
+                                   "x":  7200,
+                                   "w":  52,
+                                   "targetGravity":  1
+                               }
+                           ],
+        "spikes":  [
+                       {
+                           "x":  950,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1500,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1536,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2200,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2540,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2576,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3600,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  4100,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5640,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  5676,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  6720,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  7500,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  8300,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  8336,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  9480,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  9800,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  10600,
+                           "w":  36,
+                           "h":  38
+                       }
+                   ],
+        "platforms":  [
+                          {
+                              "x":  2800,
+                              "y":  510,
+                              "w":  220,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  4700,
+                              "y":  505,
+                              "w":  240,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  5900,
+                              "y":  150,
+                              "w":  260,
+                              "h":  35,
+                              "isBlock":  true
+                          },
+                          {
+                              "x":  9000,
+                              "y":  505,
+                              "w":  240,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  10100,
+                              "y":  510,
+                              "w":  220,
+                              "h":  22,
+                              "isBlock":  false
+                          }
+                      ],
+        "pits":  [
+                     {
+                         "startX":  4400,
+                         "endX":  4700
+                     }
+                 ],
+        "sawblades":  [
+                          {
+                              "x":  1850,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  8
+                          },
+                          {
+                              "x":  3850,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  -8
+                          },
+                          {
+                              "x":  6350,
+                              "y":  200,
+                              "radius":  24,
+                              "spinSpeed":  8
+                          },
+                          {
+                              "x":  8550,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  -8
+                          }
+                      ],
+        "movingHazards":  [
+
+                          ]
     },
-    "hints": [
-      {
-        "x": 600,
-        "y": 460,
-        "text": "840 PX/S! DIFICULDADE DEMON! INVERSÕES RÁPIDAS!"
-      },
-      {
-        "x": 3500,
-        "y": 350,
-        "text": "▲ PRIMEIRA INVERSÃO DIMENSIONAL!"
-      },
-      {
-        "x": 7900,
-        "y": 350,
-        "text": "▼ RETORNO AO SOLO!"
-      },
-      {
-        "x": 12500,
-        "y": 350,
-        "text": "▲ SEGUNDA INVERSÃO DIMENSIONAL!"
-      }
-    ],
-    "secretCoins": [
-      {
-        "id": 0,
-        "x": 2620,
-        "y": 420
-      },
-      {
-        "id": 1,
-        "x": 6000,
-        "y": 230
-      },
-      {
-        "id": 2,
-        "x": 15400,
-        "y": 230
-      }
-    ],
-    "jumpOrbs": [
-      {
-        "x": 10800,
-        "y": 450,
-        "radius": 22,
-        "jumpForce": 770,
-        "color": "#ffea00"
-      }
-    ],
-    "speedPortals": [
-      {
-        "x": 17600,
-        "w": 52,
-        "speedMultiplier": 1.15
-      }
-    ],
-    "spikes": [
-      {
-        "x": 1000,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2750,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2786,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 4400,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 5000,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 5600,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 6300,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 6900,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 6936,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 7600,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 8800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 9400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 11400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 11436,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 11472,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 13500,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 14200,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 14900,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 15600,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 16300,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 16336,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 17900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 18500,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 19100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 19136,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 19700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 20300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 20700,
-        "w": 36,
-        "h": 42
-      }
-    ],
-    "pits": [
-      {
-        "startX": 9800,
-        "endX": 10200
-      }
-    ],
-    "platforms": [
-      {
-        "x": 2100,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 6000,
-        "y": 150,
-        "w": 50,
-        "h": 40,
-        "isBlock": true
-      },
-      {
-        "x": 9750,
-        "y": 480,
-        "w": 500,
-        "h": 25
-      },
-      {
-        "x": 15200,
-        "y": 150,
-        "w": 50,
-        "h": 40,
-        "isBlock": true
-      }
-    ],
-    "jumpPads": [
-      {
-        "x": 11800,
-        "y": 558,
-        "w": 48,
-        "h": 12,
-        "bounceForce": 980
-      }
-    ],
-    "movingHazards": [],
-    "gravityPortals": [
-      {
-        "x": 3800,
-        "w": 52,
-        "targetGravity": -1
-      },
-      {
-        "x": 8200,
-        "w": 52,
-        "targetGravity": 1
-      },
-      {
-        "x": 12800,
-        "w": 52,
-        "targetGravity": -1
-      },
-      {
-        "x": 17200,
-        "w": 52,
-        "targetGravity": 1
-      }
-    ]
-  },
-  {
-    "id": 7,
-    "name": "Skyline Corridor",
-    "difficultyName": "Hard Demon",
-    "difficultyClass": "diff-mestre",
-    "speed": 900,
-    "finishX": 22500,
-    "colors": {
-      "primary": "#9d00ff",
-      "accent": "#ff00aa",
-      "bgGrad1": "#140026",
-      "bgGrad2": "#280242",
-      "floorTop": "#9d00ff",
-      "floorBody": "#18022b"
+    {
+        "id":  7,
+        "name":  "Skyline Corridor",
+        "difficultyName":  "Hard Demon",
+        "difficultyClass":  "diff-mestre",
+        "speed":  530,
+        "finishX":  12500,
+        "colors":  {
+                       "primary":  "#00ffff",
+                       "accent":  "#ffff00",
+                       "bgGrad1":  "#021218",
+                       "bgGrad2":  "#072430",
+                       "floorTop":  "#00ffff",
+                       "floorBody":  "#031520"
+                   },
+        "hints":  [
+                      {
+                          "x":  400,
+                          "y":  460,
+                          "text":  "FASE 7: CORREDOR AÉREO — PRECISÃO EM CADA TOQUE"
+                      }
+                  ],
+        "secretCoins":  [
+
+                        ],
+        "jumpOrbs":  [
+                         {
+                             "x":  5100,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  770,
+                             "color":  "#ffea00"
+                         },
+                         {
+                             "x":  9200,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  770,
+                             "color":  "#ffea00"
+                         }
+                     ],
+        "jumpPads":  [
+                         {
+                             "x":  6800,
+                             "y":  558,
+                             "w":  48,
+                             "h":  12,
+                             "bounceForce":  960
+                         }
+                     ],
+        "speedPortals":  [
+
+                         ],
+        "gravityPortals":  [
+
+                           ],
+        "spikes":  [
+                       {
+                           "x":  1000,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1600,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1636,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2300,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2740,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2776,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3500,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  4300,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  4700,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5800,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  6200,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  6236,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  7500,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  8200,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  8800,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  9900,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  10500,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  11700,
+                           "w":  36,
+                           "h":  38
+                       }
+                   ],
+        "platforms":  [
+                          {
+                              "x":  3000,
+                              "y":  510,
+                              "w":  240,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  5300,
+                              "y":  500,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  7000,
+                              "y":  480,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  9400,
+                              "y":  505,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  10900,
+                              "y":  510,
+                              "w":  240,
+                              "h":  22,
+                              "isBlock":  false
+                          }
+                      ],
+        "pits":  [
+                     {
+                         "startX":  5000,
+                         "endX":  5300
+                     }
+                 ],
+        "sawblades":  [
+                          {
+                              "x":  1950,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  8
+                          },
+                          {
+                              "x":  4050,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  -8
+                          },
+                          {
+                              "x":  7900,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  8
+                          },
+                          {
+                              "x":  10200,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  -8
+                          }
+                      ],
+        "movingHazards":  [
+                              {
+                                  "x":  8500,
+                                  "baseY":  420,
+                                  "amplitude":  50,
+                                  "speed":  5,
+                                  "w":  36,
+                                  "h":  36,
+                                  "color":  "#00ffff"
+                              }
+                          ]
     },
-    "hints": [
-      {
-        "x": 600,
-        "y": 460,
-        "text": "900 PX/S! HARD DEMON! PARKOUR SOBRE O VAZIO!"
-      },
-      {
-        "x": 4400,
-        "y": 440,
-        "text": "SALTOS PRECISOS DE PLATAFORMA EM PLATAFORMA!"
-      }
-    ],
-    "secretCoins": [
-      {
-        "id": 0,
-        "x": 2720,
-        "y": 420
-      },
-      {
-        "id": 1,
-        "x": 6300,
-        "y": 310
-      },
-      {
-        "id": 2,
-        "x": 16500,
-        "y": 400
-      }
-    ],
-    "jumpOrbs": [
-      {
-        "x": 9200,
-        "y": 450,
-        "radius": 22,
-        "jumpForce": 780,
-        "color": "#ffea00"
-      }
-    ],
-    "speedPortals": [
-      {
-        "x": 15800,
-        "w": 52,
-        "speedMultiplier": 1.15
-      }
-    ],
-    "spikes": [
-      {
-        "x": 1100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3000,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3036,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 4200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 5080,
-        "w": 36,
-        "h": 42,
-        "y": 443
-      },
-      {
-        "x": 5680,
-        "w": 36,
-        "h": 42,
-        "y": 388
-      },
-      {
-        "x": 6350,
-        "w": 36,
-        "h": 42,
-        "y": 333
-      },
-      {
-        "x": 7900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 8500,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 9200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 9900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 10600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 11300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 16600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 16636,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 16672,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 17500,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 18200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 18900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 19600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 19636,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 20400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 21100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 21700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 22100,
-        "w": 36,
-        "h": 42
-      }
-    ],
-    "pits": [
-      {
-        "startX": 4700,
-        "endX": 7400
-      },
-      {
-        "startX": 13200,
-        "endX": 13600
-      }
-    ],
-    "platforms": [
-      {
-        "x": 2800,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 4750,
-        "y": 485,
-        "w": 500,
-        "h": 25
-      },
-      {
-        "x": 5350,
-        "y": 430,
-        "w": 500,
-        "h": 25
-      },
-      {
-        "x": 6000,
-        "y": 375,
-        "w": 600,
-        "h": 25
-      },
-      {
-        "x": 6750,
-        "y": 440,
-        "w": 700,
-        "h": 25
-      },
-      {
-        "x": 10500,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 13150,
-        "y": 485,
-        "w": 500,
-        "h": 25
-      }
-    ],
-    "jumpPads": [
-      {
-        "x": 16300,
-        "y": 558,
-        "w": 48,
-        "h": 12,
-        "bounceForce": 990
-      }
-    ],
-    "movingHazards": [
-      {
-        "x": 14200,
-        "baseY": 385,
-        "w": 42,
-        "h": 42,
-        "speed": 2.8,
-        "amplitude": 50,
-        "color": "#ff00aa"
-      }
-    ],
-    "gravityPortals": []
-  },
-  {
-    "id": 8,
-    "name": "Plasma Gauntlet",
-    "difficultyName": "Insane Demon",
-    "difficultyClass": "diff-extrema",
-    "speed": 960,
-    "finishX": 24000,
-    "colors": {
-      "primary": "#00f0ff",
-      "accent": "#ff0055",
-      "bgGrad1": "#02121c",
-      "bgGrad2": "#08253a",
-      "floorTop": "#00f0ff",
-      "floorBody": "#051926"
+    {
+        "id":  8,
+        "name":  "Plasma Gauntlet",
+        "difficultyName":  "Insane Demon",
+        "difficultyClass":  "diff-extrema",
+        "speed":  550,
+        "finishX":  13500,
+        "colors":  {
+                       "primary":  "#ff0055",
+                       "accent":  "#ff5500",
+                       "bgGrad1":  "#1a0208",
+                       "bgGrad2":  "#350512",
+                       "floorTop":  "#ff0055",
+                       "floorBody":  "#1c0309"
+                   },
+        "hints":  [
+                      {
+                          "x":  400,
+                          "y":  460,
+                          "text":  "FASE 8: MANOPLA DE PLASMA - VELOCIDADE 550"
+                      }
+                  ],
+        "secretCoins":  [
+
+                        ],
+        "jumpOrbs":  [
+                         {
+                             "x":  5500,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  780,
+                             "color":  "#ffea00"
+                         },
+                         {
+                             "x":  10200,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  780,
+                             "color":  "#ffea00"
+                         }
+                     ],
+        "jumpPads":  [
+                         {
+                             "x":  8800,
+                             "y":  558,
+                             "w":  48,
+                             "h":  12,
+                             "bounceForce":  970
+                         }
+                     ],
+        "speedPortals":  [
+
+                         ],
+        "gravityPortals":  [
+                               {
+                                   "x":  6700,
+                                   "w":  52,
+                                   "targetGravity":  -1
+                               },
+                               {
+                                   "x":  8300,
+                                   "w":  52,
+                                   "targetGravity":  1
+                               }
+                           ],
+        "spikes":  [
+                       {
+                           "x":  1100,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1700,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1736,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2500,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2940,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2976,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3960,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  4700,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5100,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  7140,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  7176,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  8180,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  8540,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  9500,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  10900,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  11500,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  12600,
+                           "w":  36,
+                           "h":  38
+                       }
+                   ],
+        "platforms":  [
+                          {
+                              "x":  3200,
+                              "y":  510,
+                              "w":  240,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  5700,
+                              "y":  505,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  7400,
+                              "y":  150,
+                              "w":  260,
+                              "h":  35,
+                              "isBlock":  true
+                          },
+                          {
+                              "x":  10400,
+                              "y":  505,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  11900,
+                              "y":  510,
+                              "w":  240,
+                              "h":  22,
+                              "isBlock":  false
+                          }
+                      ],
+        "pits":  [
+                     {
+                         "startX":  5400,
+                         "endX":  5700
+                     }
+                 ],
+        "sawblades":  [
+                          {
+                              "x":  2100,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  9
+                          },
+                          {
+                              "x":  4400,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  -9
+                          },
+                          {
+                              "x":  7820,
+                              "y":  200,
+                              "radius":  24,
+                              "spinSpeed":  9
+                          },
+                          {
+                              "x":  9900,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  -9
+                          }
+                      ],
+        "movingHazards":  [
+
+                          ]
     },
-    "hints": [
-      {
-        "x": 700,
-        "y": 460,
-        "text": "960 PX/S! INSANE DEMON! ZONA DE ELITE!"
-      },
-      {
-        "x": 4800,
-        "y": 350,
-        "text": "▲ VÓRTICE HIPERSÔNICO!"
-      }
-    ],
-    "secretCoins": [
-      {
-        "id": 0,
-        "x": 2820,
-        "y": 420
-      },
-      {
-        "id": 1,
-        "x": 7400,
-        "y": 230
-      },
-      {
-        "id": 2,
-        "x": 17600,
-        "y": 410
-      }
-    ],
-    "jumpOrbs": [
-      {
-        "x": 13600,
-        "y": 450,
-        "radius": 22,
-        "jumpForce": 780,
-        "color": "#ffea00"
-      }
-    ],
-    "speedPortals": [
-      {
-        "x": 17000,
-        "w": 52,
-        "speedMultiplier": 1.15
-      }
-    ],
-    "spikes": [
-      {
-        "x": 1100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3136,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 4400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 5800,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 6500,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 7200,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 7900,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 8600,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 9300,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 9900,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 11200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 11900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 13600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 14900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 15600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 17800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 17836,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 17872,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 18700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 19400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 20100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 20800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 20836,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 21600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 22300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 23000,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 23600,
-        "w": 36,
-        "h": 42
-      }
-    ],
-    "pits": [
-      {
-        "startX": 14200,
-        "endX": 14600
-      }
-    ],
-    "platforms": [
-      {
-        "x": 2750,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 7400,
-        "y": 150,
-        "w": 50,
-        "h": 40,
-        "isBlock": true
-      },
-      {
-        "x": 14150,
-        "y": 480,
-        "w": 500,
-        "h": 25
-      },
-      {
-        "x": 16500,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      }
-    ],
-    "jumpPads": [
-      {
-        "x": 17400,
-        "y": 558,
-        "w": 48,
-        "h": 12,
-        "bounceForce": 1000
-      }
-    ],
-    "movingHazards": [
-      {
-        "x": 15300,
-        "baseY": 385,
-        "w": 42,
-        "h": 42,
-        "speed": 2.9,
-        "amplitude": 50,
-        "color": "#ff0055"
-      }
-    ],
-    "gravityPortals": [
-      {
-        "x": 5200,
-        "w": 52,
-        "targetGravity": -1
-      },
-      {
-        "x": 10400,
-        "w": 52,
-        "targetGravity": 1
-      }
-    ]
-  },
-  {
-    "id": 9,
-    "name": "Chrono Vortex",
-    "difficultyName": "Extreme Demon",
-    "difficultyClass": "diff-extrema",
-    "speed": 1020,
-    "finishX": 25500,
-    "colors": {
-      "primary": "#ffffff",
-      "accent": "#9d00ff",
-      "bgGrad1": "#110224",
-      "bgGrad2": "#230744",
-      "floorTop": "#ffffff",
-      "floorBody": "#1a0630"
+    {
+        "id":  9,
+        "name":  "Chrono Vortex",
+        "difficultyName":  "Extreme Demon",
+        "difficultyClass":  "diff-extrema",
+        "speed":  570,
+        "finishX":  14500,
+        "colors":  {
+                       "primary":  "#b800ff",
+                       "accent":  "#00e1ff",
+                       "bgGrad1":  "#12021c",
+                       "bgGrad2":  "#260438",
+                       "floorTop":  "#b800ff",
+                       "floorBody":  "#150322"
+                   },
+        "hints":  [
+                      {
+                          "x":  400,
+                          "y":  460,
+                          "text":  "FASE 9: VÓRTICE TEMPORAL — REFLEXOS RELÂMPAGO"
+                      }
+                  ],
+        "secretCoins":  [
+
+                        ],
+        "jumpOrbs":  [
+                         {
+                             "x":  6000,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  780,
+                             "color":  "#ffea00"
+                         },
+                         {
+                             "x":  11000,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  780,
+                             "color":  "#ffea00"
+                         }
+                     ],
+        "jumpPads":  [
+                         {
+                             "x":  9600,
+                             "y":  558,
+                             "w":  48,
+                             "h":  12,
+                             "bounceForce":  980
+                         }
+                     ],
+        "speedPortals":  [
+
+                         ],
+        "gravityPortals":  [
+                               {
+                                   "x":  7200,
+                                   "w":  52,
+                                   "targetGravity":  -1
+                               },
+                               {
+                                   "x":  9060,
+                                   "w":  52,
+                                   "targetGravity":  1
+                               }
+                           ],
+        "spikes":  [
+                       {
+                           "x":  1200,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1900,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  1936,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2700,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3140,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3176,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  4100,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5100,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5600,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  7640,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  7676,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  8740,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  9300,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  10300,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  11700,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  12400,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  13600,
+                           "w":  36,
+                           "h":  38
+                       }
+                   ],
+        "platforms":  [
+                          {
+                              "x":  3400,
+                              "y":  510,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  6200,
+                              "y":  505,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  7900,
+                              "y":  150,
+                              "w":  280,
+                              "h":  35,
+                              "isBlock":  true
+                          },
+                          {
+                              "x":  11200,
+                              "y":  505,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  12900,
+                              "y":  510,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          }
+                      ],
+        "pits":  [
+                     {
+                         "startX":  5900,
+                         "endX":  6200
+                     }
+                 ],
+        "sawblades":  [
+                          {
+                              "x":  2300,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  9
+                          },
+                          {
+                              "x":  4700,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  -9
+                          },
+                          {
+                              "x":  8380,
+                              "y":  200,
+                              "radius":  24,
+                              "spinSpeed":  9
+                          },
+                          {
+                              "x":  10600,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  -9
+                          }
+                      ],
+        "movingHazards":  [
+                              {
+                                  "x":  9900,
+                                  "baseY":  420,
+                                  "amplitude":  50,
+                                  "speed":  5.5,
+                                  "w":  36,
+                                  "h":  36,
+                                  "color":  "#b800ff"
+                              }
+                          ]
     },
-    "hints": [
-      {
-        "x": 700,
-        "y": 460,
-        "text": "1020 PX/S! EXTREME DEMON! DISTORÇÃO TEMPORAL!"
-      },
-      {
-        "x": 5000,
-        "y": 350,
-        "text": "▲ INVERSÃO CÓSMICA!"
-      }
-    ],
-    "secretCoins": [
-      {
-        "id": 0,
-        "x": 2920,
-        "y": 420
-      },
-      {
-        "id": 1,
-        "x": 8000,
-        "y": 230
-      },
-      {
-        "id": 2,
-        "x": 19000,
-        "y": 410
-      }
-    ],
-    "jumpOrbs": [
-      {
-        "x": 14500,
-        "y": 450,
-        "radius": 22,
-        "jumpForce": 780,
-        "color": "#ffea00"
-      }
-    ],
-    "speedPortals": [
-      {
-        "x": 18200,
-        "w": 52,
-        "speedMultiplier": 1.15
-      }
-    ],
-    "spikes": [
-      {
-        "x": 1200,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3000,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3436,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 4100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 4700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 6100,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 6800,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 7500,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 8300,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 9000,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 9700,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 10400,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 12000,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 13600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 14500,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 15900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 16700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 18800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 18836,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 18872,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 19700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 20500,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 21300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 22100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 22136,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 22900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 23700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 24500,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 25100,
-        "w": 36,
-        "h": 42
-      }
-    ],
-    "pits": [
-      {
-        "startX": 15200,
-        "endX": 15600
-      }
-    ],
-    "platforms": [
-      {
-        "x": 2850,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 8000,
-        "y": 150,
-        "w": 50,
-        "h": 40,
-        "isBlock": true
-      },
-      {
-        "x": 15150,
-        "y": 480,
-        "w": 500,
-        "h": 25
-      },
-      {
-        "x": 17400,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      }
-    ],
-    "jumpPads": [
-      {
-        "x": 18400,
-        "y": 558,
-        "w": 48,
-        "h": 12,
-        "bounceForce": 1010
-      }
-    ],
-    "movingHazards": [
-      {
-        "x": 4600,
-        "baseY": 385,
-        "w": 42,
-        "h": 42,
-        "speed": 3,
-        "amplitude": 50,
-        "color": "#ffffff"
-      }
-    ],
-    "gravityPortals": [
-      {
-        "x": 5400,
-        "w": 52,
-        "targetGravity": -1
-      },
-      {
-        "x": 11200,
-        "w": 52,
-        "targetGravity": 1
-      }
-    ]
-  },
-  {
-    "id": 10,
-    "name": "Singularity Overdrive",
-    "difficultyName": "Grandmaster Demon",
-    "difficultyClass": "diff-suprema",
-    "speed": 1080,
-    "finishX": 27000,
-    "colors": {
-      "primary": "#ffcc00",
-      "accent": "#ff1744",
-      "bgGrad1": "#1a0d00",
-      "bgGrad2": "#351203",
-      "floorTop": "#ffcc00",
-      "floorBody": "#240f02"
-    },
-    "hints": [
-      {
-        "x": 800,
-        "y": 460,
-        "text": "1080 PX/S! O DESAFIO SUPREMO DO CYBER PULSE!"
-      },
-      {
-        "x": 4800,
-        "y": 350,
-        "text": "▲ INVERSÃO HIPERSÔNICA!"
-      },
-      {
-        "x": 15000,
-        "y": 350,
-        "text": "▲ ÚLTIMA INVERSÃO DIMENSIONAL!"
-      }
-    ],
-    "secretCoins": [
-      {
-        "id": 0,
-        "x": 2900,
-        "y": 420
-      },
-      {
-        "id": 1,
-        "x": 7700,
-        "y": 230
-      },
-      {
-        "id": 2,
-        "x": 19800,
-        "y": 230
-      }
-    ],
-    "jumpOrbs": [
-      {
-        "x": 14000,
-        "y": 450,
-        "radius": 22,
-        "jumpForce": 800,
-        "color": "#ffea00"
-      }
-    ],
-    "speedPortals": [
-      {
-        "x": 22200,
-        "w": 52,
-        "speedMultiplier": 1.15
-      }
-    ],
-    "spikes": [
-      {
-        "x": 1100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 1700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 2900,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3300,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 3336,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 4000,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 4600,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 5800,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 6600,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 7300,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 8100,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 8800,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 9500,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 10200,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 11400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 12800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 14000,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 14800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 16600,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 17300,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 18100,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 18800,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 19600,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 20400,
-        "w": 36,
-        "h": 42,
-        "inverted": true
-      },
-      {
-        "x": 23800,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 23836,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 23872,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 24700,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 25400,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 25436,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 26100,
-        "w": 36,
-        "h": 42
-      },
-      {
-        "x": 26700,
-        "w": 36,
-        "h": 42
-      }
-    ],
-    "pits": [
-      {
-        "startX": 13200,
-        "endX": 13600
-      }
-    ],
-    "platforms": [
-      {
-        "x": 2800,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 7700,
-        "y": 150,
-        "w": 50,
-        "h": 40,
-        "isBlock": true
-      },
-      {
-        "x": 13150,
-        "y": 480,
-        "w": 500,
-        "h": 25
-      },
-      {
-        "x": 15000,
-        "y": 528,
-        "w": 45,
-        "h": 42,
-        "isBlock": true
-      },
-      {
-        "x": 19800,
-        "y": 150,
-        "w": 50,
-        "h": 40,
-        "isBlock": true
-      }
-    ],
-    "jumpPads": [
-      {
-        "x": 15500,
-        "y": 558,
-        "w": 48,
-        "h": 12,
-        "bounceForce": 1020
-      }
-    ],
-    "movingHazards": [
-      {
-        "x": 4200,
-        "baseY": 385,
-        "w": 42,
-        "h": 42,
-        "speed": 3.2,
-        "amplitude": 50,
-        "color": "#ff1744"
-      }
-    ],
-    "gravityPortals": [
-      {
-        "x": 5100,
-        "w": 52,
-        "targetGravity": -1
-      },
-      {
-        "x": 10600,
-        "w": 52,
-        "targetGravity": 1
-      },
-      {
-        "x": 15800,
-        "w": 52,
-        "targetGravity": -1
-      },
-      {
-        "x": 21200,
-        "w": 52,
-        "targetGravity": 1
-      }
-    ]
-  }
+    {
+        "id":  10,
+        "name":  "Singularity Overdrive",
+        "difficultyName":  "Grandmaster",
+        "difficultyClass":  "diff-suprema",
+        "speed":  590,
+        "finishX":  16000,
+        "colors":  {
+                       "primary":  "#ff003c",
+                       "accent":  "#00f0ff",
+                       "bgGrad1":  "#1a0007",
+                       "bgGrad2":  "#330010",
+                       "floorTop":  "#ff003c",
+                       "floorBody":  "#1a0008"
+                   },
+        "hints":  [
+                      {
+                          "x":  400,
+                          "y":  460,
+                          "text":  "FASE FINAL: SOBRECARGA DA SINGULARIDADE"
+                      },
+                      {
+                          "x":  15200,
+                          "y":  460,
+                          "text":  "O CLÍMAX SUPREMO! VOCÊ É UMA LENDA!"
+                      }
+                  ],
+        "secretCoins":  [
+
+                        ],
+        "jumpOrbs":  [
+                         {
+                             "x":  6500,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  780,
+                             "color":  "#ffea00"
+                         },
+                         {
+                             "x":  12200,
+                             "y":  440,
+                             "radius":  22,
+                             "jumpForce":  780,
+                             "color":  "#ffea00"
+                         }
+                     ],
+        "jumpPads":  [
+                         {
+                             "x":  10500,
+                             "y":  558,
+                             "w":  48,
+                             "h":  12,
+                             "bounceForce":  990
+                         }
+                     ],
+        "speedPortals":  [
+
+                         ],
+        "gravityPortals":  [
+                               {
+                                   "x":  8000,
+                                   "w":  52,
+                                   "targetGravity":  -1
+                               },
+                               {
+                                   "x":  10000,
+                                   "w":  52,
+                                   "targetGravity":  1
+                               }
+                           ],
+        "spikes":  [
+                       {
+                           "x":  1300,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2000,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2036,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  2900,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3440,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  3476,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  4400,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  5500,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  6100,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  8540,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  8576,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  9600,
+                           "w":  36,
+                           "h":  38,
+                           "inverted":  true
+                       },
+                       {
+                           "x":  10240,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  11400,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  12900,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  13800,
+                           "w":  36,
+                           "h":  38
+                       },
+                       {
+                           "x":  15000,
+                           "w":  36,
+                           "h":  38
+                       }
+                   ],
+        "platforms":  [
+                          {
+                              "x":  3700,
+                              "y":  510,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  6700,
+                              "y":  505,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  8800,
+                              "y":  150,
+                              "w":  300,
+                              "h":  35,
+                              "isBlock":  true
+                          },
+                          {
+                              "x":  12400,
+                              "y":  505,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          },
+                          {
+                              "x":  14400,
+                              "y":  510,
+                              "w":  260,
+                              "h":  22,
+                              "isBlock":  false
+                          }
+                      ],
+        "pits":  [
+                     {
+                         "startX":  6400,
+                         "endX":  6700
+                     }
+                 ],
+        "sawblades":  [
+                          {
+                              "x":  2500,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  10
+                          },
+                          {
+                              "x":  5100,
+                              "y":  515,
+                              "radius":  24,
+                              "spinSpeed":  -10
+                          },
+                          {
+                              "x":  9340,
+                              "y":  200,
+                              "radius":  24,
+                              "spinSpeed":  10
+                          },
+                          {
+                              "x":  11800,
+                              "y":  520,
+                              "radius":  24,
+                              "spinSpeed":  -10
+                          }
+                      ],
+        "movingHazards":  [
+                              {
+                                  "x":  10900,
+                                  "baseY":  420,
+                                  "amplitude":  50,
+                                  "speed":  6,
+                                  "w":  36,
+                                  "h":  36,
+                                  "color":  "#ff003c"
+                              }
+                          ]
+    }
 ];

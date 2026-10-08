@@ -81,68 +81,9 @@ class AudioController {
   }
 
   /**
-   * Som ao Acertar um Jump Orb no ar (Efeito cristalino e enérgico)
+   * Som de Zumbido/Corte de Serra Giratória Neon
    */
-  playOrb() {
-    if (this.isMuted) return;
-    this.init();
-    if (!this.ctx) return;
-
-    try {
-      const t = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(520, t);
-      osc.frequency.exponentialRampToValueAtTime(1080, t + 0.13);
-
-      gain.gain.setValueAtTime(0.28, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
-
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(t);
-      osc.stop(t + 0.16);
-    } catch (e) {}
-  }
-
-  /**
-   * Som de Coleta de Moeda Secreta (Arpeggio brilhante de sino clássico)
-   */
-  playCoin() {
-    if (this.isMuted) return;
-    this.init();
-    if (!this.ctx) return;
-
-    try {
-      const t = this.ctx.currentTime;
-      const notes = [987.77, 1318.51, 1975.53]; // Si5, Mi6, Si6
-      notes.forEach((freq, idx) => {
-        const st = t + idx * 0.07;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, st);
-
-        gain.gain.setValueAtTime(0.22, st);
-        gain.gain.exponentialRampToValueAtTime(0.001, st + 0.2);
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc.start(st);
-        osc.stop(st + 0.22);
-      });
-    } catch (e) {}
-  }
-
-  /**
-   * Som de Portal de Velocidade
-   */
-  playSpeedPortal() {
+  playSaw() {
     if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
@@ -153,17 +94,17 @@ class AudioController {
       const gain = this.ctx.createGain();
 
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(320, t);
-      osc.frequency.exponentialRampToValueAtTime(850, t + 0.18);
+      osc.frequency.setValueAtTime(480, t);
+      osc.frequency.linearRampToValueAtTime(320, t + 0.12);
 
-      gain.gain.setValueAtTime(0.18, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      gain.gain.setValueAtTime(0.2, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
       osc.start(t);
-      osc.stop(t + 0.21);
+      osc.stop(t + 0.15);
     } catch (e) {}
   }
 
@@ -336,69 +277,6 @@ class AudioController {
     } catch (e) {}
   }
 
-  /**
-   * Som de Coleta da Moeda Secreta (Arpejo duplo brilhante de sino de ouro)
-   */
-  playCoin() {
-    if (this.isMuted) return;
-    this.init();
-    if (!this.ctx) return;
-
-    try {
-      const t = this.ctx.currentTime;
-      const osc1 = this.ctx.createOscillator();
-      const osc2 = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(987.77, t); // B5
-      osc1.frequency.setValueAtTime(1318.51, t + 0.08); // E6
-
-      osc2.type = 'triangle';
-      osc2.frequency.setValueAtTime(1975.53, t); // B6
-      osc2.frequency.setValueAtTime(2637.02, t + 0.08); // E7
-
-      gain.gain.setValueAtTime(0.28, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-
-      osc1.connect(gain);
-      osc2.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc1.start(t);
-      osc2.start(t);
-      osc1.stop(t + 0.36);
-      osc2.stop(t + 0.36);
-    } catch (e) {}
-  }
-
-  /**
-   * Som do Speed Portal (Woosh futurista de aceleração dimensional)
-   */
-  playSpeedPortal() {
-    if (this.isMuted) return;
-    this.init();
-    if (!this.ctx) return;
-
-    try {
-      const t = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(250, t);
-      osc.frequency.exponentialRampToValueAtTime(900, t + 0.2);
-
-      gain.gain.setValueAtTime(0.26, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(t);
-      osc.stop(t + 0.26);
-    } catch (e) {}
-  }
 
 
   /**

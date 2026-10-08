@@ -218,44 +218,6 @@ html, body {
   letter-spacing: 0.5px;
 }
 
-.hud-coins {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(9, 13, 33, 0.7);
-  padding: 6px 14px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 215, 0, 0.3);
-}
-
-.hud-coin {
-  font-size: 1.15rem;
-  color: rgba(255, 255, 255, 0.2);
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.hud-coin.collected {
-  color: #ffd700;
-  text-shadow: 0 0 10px #ffd700, 0 0 20px #ff9900;
-  transform: scale(1.15);
-}
-
-.card-coins-row {
-  display: flex;
-  gap: 6px;
-  margin: 4px 0 6px 0;
-}
-
-.card-coin {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.2);
-}
-
-.card-coin.collected {
-  color: #ffd700;
-  text-shadow: 0 0 8px #ffd700;
-}
-
 .highlight-gold {
   color: #ffd700 !important;
   text-shadow: 0 0 12px rgba(255, 215, 0, 0.8) !important;
@@ -807,83 +769,6 @@ html, body {
   opacity: 1;
 }
 
-/* ==========================================================================
-   Responsividade Mobile / Tablets
-   ========================================================================== */
-@media (max-width: 768px) {
-  .game-title {
-    font-size: 2.1rem;
-  }
-
-  .game-subtitle {
-    font-size: 0.8rem;
-    letter-spacing: 2px;
-  }
-
-  .menu-box {
-    padding: 24px 20px;
-    gap: 16px;
-  }
-
-  .hud-top-bar {
-    margin-top: -12px;
-  }
-
-  .hud-level-info {
-    padding: 4px 8px;
-    gap: 6px;
-  }
-
-  .level-name {
-    font-size: 0.8rem;
-  }
-
-  .attempts-counter {
-    font-size: 0.9rem;
-  }
-
-  .hud-btn {
-    width: 34px;
-    height: 34px;
-    font-size: 0.95rem;
-  }
-
-  .controls-hint {
-    display: none;
-  }
-
-  .controls-hint-mobile {
-    display: block;
-    color: var(--neon-cyan);
-    font-weight: 600;
-  }
-
-  .levels-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .total-stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .skins-content-layout {
-    grid-template-columns: 1fr;
-    max-height: 60vh;
-  }
-
-  .skin-preview-card {
-    padding: 16px;
-  }
-
-  #skinPreviewCanvas {
-    width: 160px;
-    height: 160px;
-  }
-
-  .skins-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  }
-}
 
 /* ==========================================================================
    MODAL DE SELEÇÃO DE SKINS (Visual Cyberpunk Neon)
@@ -1104,4 +989,189 @@ html, body {
   border-radius: 4px;
   letter-spacing: 0.5px;
 }
+
+/* ==========================================================================
+   Responsividade: Desktop, Notebooks, Tablets e Smartphones
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .menu-box.large-box {
+    max-width: 90%;
+    max-height: 90vh;
+  }
+
+  .hud-top-bar {
+    margin-top: -16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .game-title {
+    font-size: 2.2rem;
+  }
+
+  .game-subtitle {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+  }
+
+  .menu-box {
+    padding: 24px 20px;
+    gap: 16px;
+    width: 92%;
+  }
+
+  #gameHud {
+    padding: 10px 14px;
+  }
+
+  .hud-top-bar {
+    margin-top: 0;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .hud-level-info {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+
+  .level-badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+  }
+
+  .level-name {
+    font-size: 0.8rem;
+  }
+
+  .hud-record {
+    font-size: 0.7rem;
+    padding: 2px 5px;
+  }
+
+
+  .hud-stats {
+    padding: 4px 8px;
+    gap: 4px;
+  }
+
+  .attempts-label {
+    font-size: 0.7rem;
+  }
+
+  .attempts-counter {
+    font-size: 0.85rem;
+  }
+
+  .hud-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.95rem;
+  }
+
+  .controls-hint {
+    display: none;
+  }
+
+  .controls-hint-mobile {
+    display: block;
+    color: var(--neon-cyan);
+    font-weight: 600;
+  }
+
+  .levels-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .total-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Modal de skins adaptado para tela menor (coluna única) */
+  .skins-modal-box {
+    width: 95%;
+    max-height: 90vh;
+    padding: 18px 16px;
+  }
+
+  .skins-content-layout {
+    grid-template-columns: 1fr;
+    max-height: 62vh;
+    overflow-y: auto;
+    gap: 16px;
+  }
+
+  .skin-preview-card {
+    padding: 14px;
+  }
+
+  #skinPreviewCanvas {
+    width: 150px;
+    height: 150px;
+  }
+
+  .skins-grid {
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+    gap: 8px;
+    max-height: 240px;
+  }
+
+  .skin-card {
+    padding: 10px 6px;
+  }
+
+  .skin-card-icon {
+    font-size: 1.6rem;
+  }
+
+  .skin-card-name {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-title {
+    font-size: 1.8rem;
+  }
+
+  .menu-box {
+    padding: 20px 14px;
+    gap: 14px;
+  }
+
+  .cyber-btn {
+    padding: 12px 18px;
+    font-size: 0.88rem;
+  }
+
+  .hud-top-bar {
+    gap: 6px;
+  }
+
+  .hud-level-info {
+    padding: 3px 6px;
+  }
+
+  .level-name {
+    display: none; /* Em telas muito estreitas, oculta nome longo e mantém badge */
+  }
+
+
+  .hud-stats {
+    padding: 3px 6px;
+  }
+
+  .hud-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 0.85rem;
+  }
+
+  .progress-bar-track {
+    height: 8px;
+  }
+}
+
 
